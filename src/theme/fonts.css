@@ -1,0 +1,104 @@
+@font-face {
+  font-family: "Beleren";
+  src: url("../assets/fonts/Beleren Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Beleren SC";
+  src: url("../assets/fonts/Beleren SC Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Goudy Medieval";
+  src: url("../assets/fonts/Goudy Medieval.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Matrix";
+  src: url("../assets/fonts/Matrix Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MPlantin";
+  src: url("../assets/fonts/MPlantin.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MPlantin";
+  src: url("../assets/fonts/MPlantin Italic.ttf") format("truetype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Plantin";
+  src: url("../assets/fonts/Plantin Semibold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Plantin";
+  src: url("../assets/fonts/Plantin Semibold Italic.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../assets/fonts/Bookinsanity.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../assets/fonts/Bookinsanity Bold Italic.otf") format("opentype");
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../assets/fonts/Bookinsanity Bold.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bookinsanity";
+  src: url("../assets/fonts/Bookinsanity Italic.otf") format("opentype");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Mr Eaves";
+  src: url("../assets/fonts/Mr Eaves Small Caps.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Nodesto";
+  src: url("../assets/fonts/Nodesto Caps Condensed.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zatanna";
+  src: url("../assets/fonts/Zatanna Misdirection.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
