@@ -12,5 +12,9 @@ export function createObservable<T>() {
     return () => listeners.delete(callback);
   }
 
-  return { notify, subscribe };
+  function unsubscribe(callback: Callback<T>): void {
+    listeners.delete(callback);
+  }
+
+  return { notify, subscribe, unsubscribe };
 }

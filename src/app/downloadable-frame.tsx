@@ -4,21 +4,25 @@ import {
   useActiveLayoutBleed,
   useActiveLayoutSize,
   useExportDpi,
+  useExportPpi,
 } from "../app-store";
 import type { Data } from "../models/data";
 import DownloadableDiv, {
   type DownloadableDivRefObject,
 } from "./downloadable-div";
-import PreviewFrame from "./preview-frame";
+import PreviewFrame, { type PreviewFrameRefObject } from "./preview-frame";
 
 export type DownloadableFrameRefObject = {
   downloadPng: () => Promise<string>;
   setData: (data: Data) => void;
+  subscribeReady: (callback: (ready: boolean) => void) => void;
+  unsubscribeReady: (callback: (ready: boolean) => void) => void;
 };
 
 export default forwardRef<DownloadableFrameRefObject>(
   function DownloadableFrame(_props, ref) {
     const downloadableDivRef = useRef<DownloadableDivRefObject>(null);
+    const previewFrameRef = useRef<PreviewFrameRefObject>(null);
 
     const bleed = useActiveLayoutBleed();
     const bleedW = bleed.visible ? bleed.w : 0;
@@ -34,7 +38,7 @@ export default forwardRef<DownloadableFrameRefObject>(
     const frameW = layoutSize.w + 2 * bleedW;
 
     const [dpi] = useExportDpi();
-    const [ppi] = useExportDpi();
+    const [ppi] = useExportPpi();
 
     const [data, setData] = useState<Data>({});
 
@@ -44,6 +48,8 @@ export default forwardRef<DownloadableFrameRefObject>(
           ? downloadableDivRef.current.downloadPng()
           : Promise.reject("DownloadableFrame.downloadPng: no ref"),
       setData,
+      subscribeReady: previewFrameRef.current?.subscribeReady ?? (() => {}),
+      unsubscribeReady: previewFrameRef.current?.unsubscribeReady ?? (() => {}),
     }));
 
     return (
@@ -67,6 +73,7 @@ export default forwardRef<DownloadableFrameRefObject>(
             layoutW={layoutSize.w}
             layoutX={layoutX}
             layoutY={layoutY}
+            ref={previewFrameRef}
             scale={1}
           />
         </DownloadableDiv>

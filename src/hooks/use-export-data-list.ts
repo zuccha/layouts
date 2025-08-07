@@ -27,9 +27,19 @@ export default function useExportDataList({
       if (!ref.current)
         return Promise.reject(`useExportDataList(${index}): no ref`);
 
+      let callback: (ready: boolean) => void = () => {};
+      const readyPromise = new Promise<void>((resolve) => {
+        callback = (ready: boolean) => ready && resolve();
+        ref.current?.subscribeReady(callback);
+      });
+
       ref.current.setData(data);
 
-      await wait(200);
+      await wait(1);
+      await readyPromise;
+      await wait(1);
+
+      ref.current.unsubscribeReady(callback);
 
       const url = await ref.current.downloadPng();
       const reader = new Data64URIReader(url);

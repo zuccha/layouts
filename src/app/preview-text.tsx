@@ -17,9 +17,14 @@ import PreviewBox from "./preview-box";
 export type PreviewTextProps = {
   data: Data;
   item: LayoutItemText;
+  onReady?: (ready: boolean) => void;
 };
 
-export default function PreviewText({ data, item }: PreviewTextProps) {
+export default function PreviewText({
+  data,
+  item,
+  onReady = () => {},
+}: PreviewTextProps) {
   const [ready, setReady] = useState(false);
 
   const [fontSize, setFontSize] = useState(item.fontSize);
@@ -30,9 +35,10 @@ export default function PreviewText({ data, item }: PreviewTextProps) {
   const text = useInterpolatedText(item.text, data);
 
   useLayoutEffect(() => {
+    onReady(false);
     setReady(false);
     setFontSize(item.fontSize);
-  }, [item.fontSize, data]);
+  }, [item.fontSize, data, onReady]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -41,6 +47,7 @@ export default function PreviewText({ data, item }: PreviewTextProps) {
     if (container.scrollHeight > container.clientHeight) {
       setFontSize(fontSize - 0.1);
     } else {
+      onReady(true);
       setReady(true);
       if (textContainerRef.current)
         textContainerRef.current.style.marginTop = computeMarginTop(
@@ -49,7 +56,7 @@ export default function PreviewText({ data, item }: PreviewTextProps) {
           textContainerRef.current.clientHeight,
         );
     }
-  }, [alignV, fontSize, data, item]);
+  }, [alignV, fontSize, data, item, onReady]);
 
   const patterns = useMemo(() => {
     return item.patterns.flatMap((pattern) => {

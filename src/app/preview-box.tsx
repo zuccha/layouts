@@ -1,14 +1,22 @@
 import { Box } from "@chakra-ui/react";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useLayoutEffect } from "react";
 import { selectActiveLayoutSelectedItem } from "../app-store";
 import type { LayoutItemBox } from "../models/layout";
 
 export type PreviewBoxProps = {
   children?: ReactNode;
   item: LayoutItemBox;
+  onReady?: (ready: boolean) => void;
 };
 
-export default function PreviewBox({ children, item }: PreviewBoxProps) {
+export default function PreviewBox({
+  children,
+  item,
+  onReady = () => {},
+}: PreviewBoxProps) {
+  useLayoutEffect(() => onReady(false), [onReady]);
+  useEffect(() => onReady(true), [onReady]);
+
   if (!item.visible) return null;
 
   const { bl, br, tl, tr } = item.border.radius;
