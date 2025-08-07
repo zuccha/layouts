@@ -114,11 +114,6 @@ export const layoutItemTextSchema = z.intersection(
     fontWeight: z.enum(["normal", "bold"]).default("normal"),
     lineHeight: z.number().default(1.2),
     patterns: z.array(patternSchema).default([]),
-    // .default([
-    //   { regex: "\\*\\*([^\\*]*)\\*\\*", type: "bold" },
-    //   { regex: "_([^_]*)_", type: "italic" },
-    //   { regex: "{([^}]+)}", type: "symbol" },
-    // ]),
     text: z.string().default(""),
     textColor: z.string().default("#000000"),
     textTransform: z
