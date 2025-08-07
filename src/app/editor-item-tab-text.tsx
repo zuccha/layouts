@@ -222,7 +222,6 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
             }
             placeholder="Paragraph gap"
             size="xs"
-            step={0.1}
             value={item.paragraphGap}
           />
         </HStack>
