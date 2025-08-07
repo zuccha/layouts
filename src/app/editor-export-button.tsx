@@ -1,21 +1,23 @@
 import { Button, HStack, Span, VStack } from "@chakra-ui/react";
 import { type ReactNode, useState } from "react";
-import { useDataListSize } from "../app-store";
+import {
+  useDataListSize,
+  useExportDpi,
+  useExportFolder,
+  useExportImageName,
+  useExportPpi,
+} from "../app-store";
 import FormDialogButton from "../components/ui/form-dialog-button";
 import Input from "../components/ui/input";
 import NumberInput from "../components/ui/number-input";
 import useExportDataList from "../hooks/use-export-data-list";
-import {
-  useStorePersistentNumber,
-  useStorePersistentString,
-} from "../utils/store-persistent";
 
 export default function EditorExportButton() {
   const [downloadProgress, setDownloadProgress] = useState(-1);
-  const [folder, setFolder] = useFolder();
-  const [imageName, setImageName] = useImageName();
-  const [dpi, setDpi] = useDpi();
-  const [ppi, setPpi] = usePpi();
+  const [folder, setFolder] = useExportFolder();
+  const [imageName, setImageName] = useExportImageName();
+  const [dpi, setDpi] = useExportDpi();
+  const [ppi, setPpi] = useExportPpi();
 
   const dataListSize = useDataListSize();
 
@@ -100,8 +102,3 @@ function Group({ children, label }: { children: ReactNode; label: string }) {
     </VStack>
   );
 }
-
-const useFolder = () => useStorePersistentString("export.folder", "images");
-const useImageName = () => useStorePersistentString("export.name", "");
-const useDpi = () => useStorePersistentNumber("export.dpi", 800);
-const usePpi = () => useStorePersistentNumber("export.ppi", 128);

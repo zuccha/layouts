@@ -17,6 +17,10 @@ import { createHistory } from "./utils/history";
 import { createObservable } from "./utils/observable";
 import { createObservableById } from "./utils/observable-by-id";
 import { createStoreDB, initializeStores } from "./utils/store-db";
+import {
+  useStorePersistentNumber,
+  useStorePersistentString,
+} from "./utils/store-persistent";
 
 //------------------------------------------------------------------------------
 // History
@@ -1180,3 +1184,29 @@ export function useImagesDirectoryHandle(): State["imagesDirectoryDirHandle"] {
   useLayoutEffect(() => subscribeImagesDirectoryHandle(setDirHandle), []);
   return dirHandle;
 }
+
+//------------------------------------------------------------------------------
+// Use Export Folder
+//------------------------------------------------------------------------------
+
+export const useExportFolder = () =>
+  useStorePersistentString("export.folder", "images");
+
+//------------------------------------------------------------------------------
+// Use Export Image Name
+//------------------------------------------------------------------------------
+
+export const useExportImageName = () =>
+  useStorePersistentString("export.name", "");
+
+//------------------------------------------------------------------------------
+// Use Export Dpi
+//------------------------------------------------------------------------------
+
+export const useExportDpi = () => useStorePersistentNumber("export.dpi", 800);
+
+//------------------------------------------------------------------------------
+// Use Export Ppi
+//------------------------------------------------------------------------------
+
+export const useExportPpi = () => useStorePersistentNumber("export.ppi", 128);
