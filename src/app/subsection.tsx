@@ -4,12 +4,14 @@ import type { ReactNode } from "react";
 export type SubsectionProps = StackProps & {
   actions?: ReactNode;
   children: ReactNode;
+  contentStyle?: StackProps;
   label: string;
 };
 
 export default function Subsection({
   actions,
   children,
+  contentStyle,
   label,
   ...rest
 }: SubsectionProps) {
@@ -30,7 +32,7 @@ export default function Subsection({
         {actions}
       </Flex>
 
-      <VStack align="start" px={4} w="100%">
+      <VStack align="start" px={4} w="100%" {...contentStyle}>
         {children}
       </VStack>
     </VStack>

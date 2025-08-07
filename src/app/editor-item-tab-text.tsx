@@ -243,6 +243,7 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
             variant="ghost"
           />
         }
+        contentStyle={{ gap: 0 }}
         label="Patterns"
       >
         {item.patterns.map((pattern, i) => (
