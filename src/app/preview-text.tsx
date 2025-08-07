@@ -108,7 +108,7 @@ export default function PreviewText({ data, item }: PreviewTextProps) {
       >
         <VStack
           align={alignHToAlignItems[item.alignH]}
-          gap={1}
+          gap={`${item.paragraphGap}em`}
           h="full"
           justify={alignVToJustifyContent[item.alignV]}
           position="absolute"

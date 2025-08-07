@@ -121,6 +121,7 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
 
         <HStack>
           <NumberInput
+            min={0}
             onValueChange={(fontSize) =>
               updateTextItemInActiveLayout(
                 item.id,
@@ -191,6 +192,38 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
               )
             }
             size="xs"
+          />
+        </HStack>
+
+        <HStack w="full">
+          <NumberInput
+            min={0}
+            onValueChange={(lineHeight) =>
+              updateTextItemInActiveLayout(
+                item.id,
+                { lineHeight },
+                "line-height-editor",
+              )
+            }
+            placeholder="Line height"
+            size="xs"
+            step={0.1}
+            value={item.lineHeight}
+          />
+
+          <NumberInput
+            min={0}
+            onValueChange={(paragraphGap) =>
+              updateTextItemInActiveLayout(
+                item.id,
+                { paragraphGap },
+                "paragraph-gap-editor",
+              )
+            }
+            placeholder="Paragraph gap"
+            size="xs"
+            step={0.1}
+            value={item.paragraphGap}
           />
         </HStack>
       </Subsection>

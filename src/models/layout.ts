@@ -113,6 +113,7 @@ export const layoutItemTextSchema = z.intersection(
     fontStyle: z.enum(["normal", "italic"]).default("normal"),
     fontWeight: z.enum(["normal", "bold"]).default("normal"),
     lineHeight: z.number().default(1.2),
+    paragraphGap: z.number().default(0.4),
     patterns: z.array(patternSchema).default([]),
     text: z.string().default(""),
     textColor: z.string().default("#000000"),
