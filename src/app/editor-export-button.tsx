@@ -22,11 +22,9 @@ export default function EditorExportButton() {
   const dataListSize = useDataListSize();
 
   const exportDataList = useExportDataList({
-    dpi,
-    folder: folder || "images",
+    folder,
     imageName,
     onProgress: setDownloadProgress,
-    ppi,
   });
 
   const percentage = Math.round((100 * downloadProgress) / dataListSize);

@@ -1,9 +1,15 @@
 import { Center, HStack, Span, Text, VStack } from "@chakra-ui/react";
 import { type ReactNode, useLayoutEffect, useState } from "react";
+import DownloadableFrame from "./app/downloadable-frame";
 import Editor from "./app/editor";
 import Preview from "./app/preview";
 import Sidebar from "./app/sidebar";
-import { history, initialize, shouldRequestPermissions } from "./app-store";
+import {
+  history,
+  initialize,
+  shouldRequestPermissions,
+  useDownloadableFrameRef,
+} from "./app-store";
 import { Button } from "./components/ui/button";
 import ThemeButton from "./theme/theme-button";
 
@@ -16,6 +22,7 @@ type AppState =
 
 function App() {
   const [state, setState] = useState<AppState>("loading");
+  const downloadableFrameRef = useDownloadableFrameRef();
 
   useLayoutEffect(() => {
     const onLoad = async () => {
@@ -94,10 +101,12 @@ function App() {
 
   return (
     <AppWrapper>
-      <HStack flex={1} gap={0} w="full">
+      <HStack flex={1} gap={0} position="relative" w="full">
         <Sidebar />
         <Preview />
         <Editor />
+
+        <DownloadableFrame ref={downloadableFrameRef} />
       </HStack>
     </AppWrapper>
   );

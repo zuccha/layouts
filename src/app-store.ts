@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import z from "zod/v4";
+import type { DownloadableFrameRefObject } from "./app/downloadable-frame";
 import useMountedLayoutEffect from "./hooks/use-mounted-layout-effect";
 import { type Data, type DataList, dataResponseSchema } from "./models/data";
 import {
@@ -16,6 +17,7 @@ import { ensurePermission } from "./utils/file-system-handles";
 import { createHistory } from "./utils/history";
 import { createObservable } from "./utils/observable";
 import { createObservableById } from "./utils/observable-by-id";
+import { createStore } from "./utils/store";
 import { createStoreDB, initializeStores } from "./utils/store-db";
 import {
   useStorePersistentNumber,
@@ -1210,3 +1212,15 @@ export const useExportDpi = () => useStorePersistentNumber("export.dpi", 800);
 //------------------------------------------------------------------------------
 
 export const useExportPpi = () => useStorePersistentNumber("export.ppi", 128);
+
+//------------------------------------------------------------------------------
+// Use Downloadable Frame Ref
+//------------------------------------------------------------------------------
+
+const downloadableFrameRefStore = createStore<{
+  current: DownloadableFrameRefObject | null;
+}>({
+  current: null,
+});
+
+export const useDownloadableFrameRef = downloadableFrameRefStore.useValue;
