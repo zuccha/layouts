@@ -1,0 +1,50 @@
+import { Box } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { Group, Layer, Stage } from "react-konva";
+import CanvasFrame from "./canvas-frame";
+
+export default function Canvas() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ h: 0, w: 0 });
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const resize = () => {
+    if (!containerRef.current) return;
+    const { offsetHeight, offsetWidth } = containerRef.current;
+    setSize({ h: offsetHeight, w: offsetWidth });
+  };
+
+  const wheel = (e: WheelEvent) => {
+    e.preventDefault();
+    if (e.ctrlKey) setScale((s) => Math.max(s + e.deltaY * -0.01, 0));
+    else setOffset(({ x, y }) => ({ x: x - e.deltaX, y: y - e.deltaY }));
+  };
+
+  useEffect(() => {
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    container?.addEventListener("wheel", wheel, { passive: false });
+    return () => container?.removeEventListener("wheel", wheel);
+  }, []);
+
+  const x = size.w / 2 + offset.x;
+  const y = size.h / 2 + offset.y;
+
+  return (
+    <Box bgColor="bg.subtle" flex={1} h="full" ref={containerRef}>
+      <Stage height={size.h} width={size.w}>
+        <Layer>
+          <Group scale={{ x: scale, y: scale }} x={x} y={y}>
+            <CanvasFrame />
+          </Group>
+        </Layer>
+      </Stage>
+    </Box>
+  );
+}
