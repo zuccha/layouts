@@ -35,7 +35,7 @@ function CanvasItemTextAux({
   const [textChunkRects, fontSize] = useMemo(() => {
     const paragraphs = text.split("\n");
     let fontSize = item.fontSize;
-    let textChunkRects: TextChunkRect[] = [];
+    let textChunkRects: TextChunkRect[][][] = [];
     let lastChunkRect: TextChunkRect | undefined = undefined;
 
     do {
@@ -50,14 +50,19 @@ function CanvasItemTextAux({
         item.textTransform,
       );
       fontSize -= 0.1;
-      lastChunkRect = textChunkRects[textChunkRects.length - 1];
+      lastChunkRect = last(last(last(textChunkRects)));
     } while (
       lastChunkRect &&
       lastChunkRect.y + fontSize + 0.1 > h &&
       fontSize > 1
     );
 
-    return [textChunkRects, fontSize];
+    return [
+      textChunkRects.flatMap((paragraph) =>
+        paragraph.flatMap((lines) => lines.flat()),
+      ),
+      fontSize,
+    ];
   }, [
     h,
     item.fontFamily,
@@ -72,7 +77,6 @@ function CanvasItemTextAux({
 
   return textChunkRects.map((textChunkRect, i) => (
     <Text
-      align={item.alignH}
       fill={item.textColor}
       fontFamily={item.fontFamily}
       fontSize={fontSize}
@@ -80,7 +84,6 @@ function CanvasItemTextAux({
       height={textChunkRect.h}
       key={i}
       text={textChunkRect.text}
-      verticalAlign={item.alignV}
       width={textChunkRect.w}
       x={textChunkRect.x}
       y={textChunkRect.y}
@@ -120,9 +123,9 @@ function computeTextChunksRects(
   lineHeight: number,
   paragraphGap: number,
   textTransform: LayoutItemText["textTransform"],
-): TextChunkRect[] {
+): TextChunkRect[][][] {
   let yOffset = 0;
-  return paragraphs.flatMap((paragraph) => {
+  return paragraphs.map((paragraph) => {
     const paragraphTextChunks = computeParagraphTextChunks(
       paragraph,
       patterns,
@@ -138,8 +141,8 @@ function computeTextChunksRects(
       fontSize,
       lineHeight,
     );
-    const last = paragraphTextChunkRects[paragraphTextChunkRects.length - 1];
-    yOffset = (last?.y ?? 0) + fontSize + paragraphGap;
+    yOffset =
+      (last(last(paragraphTextChunkRects))?.y ?? 0) + fontSize + paragraphGap;
     return paragraphTextChunkRects;
   });
 }
@@ -150,6 +153,8 @@ function computeParagraphTextChunks(
 ): TextChunk[] {
   const chunks: TextChunk[] = [];
   let cursor = 0;
+
+  if (!text) return [{ text: "" }];
 
   const textChunkPattern: TextChunkPattern[] = patterns
     .filter((pattern) => pattern.delimiter.close && pattern.delimiter.open)
@@ -208,26 +213,31 @@ function computeParagraphChunkRects(
   fontFamily: string,
   fontSize: number,
   lineHeight: number,
-): TextChunkRect[] {
-  const textChunkRects: TextChunkRect[] = [];
+): TextChunkRect[][] {
   const textChunksQueue = [...textChunks];
+  const textChunkRects: TextChunkRect[][] = [];
+  let lineTextChunkRects: TextChunkRect[] = [];
   let x = 0;
   let y = yOffset;
   while (textChunksQueue.length) {
     const textChunk = textChunksQueue.shift()!;
     const size = measureTextChunk(textChunk, fontFamily, fontSize);
     if (size.w <= w - x) {
-      textChunkRects.push({ ...textChunk, ...size, x, y });
+      lineTextChunkRects.push({ ...textChunk, ...size, x, y });
       x += size.w;
     } else if (textChunk.text.length <= 1) {
       x = size.w;
       y += fontSize * lineHeight;
-      textChunkRects.push({ ...textChunk, ...size, x: 0, y });
+      textChunkRects.push(lineTextChunkRects);
+      lineTextChunkRects = [];
+      lineTextChunkRects.push({ ...textChunk, ...size, x: 0, y });
     } else if (!/ +/.test(textChunk.text)) {
       if (size.w < w) {
         x = size.w;
         y += fontSize * lineHeight;
-        textChunkRects.push({ ...textChunk, ...size, x: 0, y });
+        textChunkRects.push(lineTextChunkRects);
+        lineTextChunkRects = [];
+        lineTextChunkRects.push({ ...textChunk, ...size, x: 0, y });
       } else {
         const middle = Math.floor(textChunk.text.length / 2);
         const left = textChunk.text.slice(0, middle);
@@ -242,6 +252,7 @@ function computeParagraphChunkRects(
       textChunksQueue.unshift({ ...textChunk, text: left });
     }
   }
+  textChunkRects.push(lineTextChunkRects);
   return textChunkRects;
 }
 
@@ -304,4 +315,8 @@ function transformText(
       uppercase: text.toUpperCase(),
     }[textTransform as string] ?? text
   );
+}
+
+function last<T>(list: T[] | undefined): T | undefined {
+  return list ? list[list.length - 1] : undefined;
 }
