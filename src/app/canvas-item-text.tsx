@@ -39,7 +39,7 @@ function CanvasItemTextAux({
     let lastChunkRect: TextChunkRect | undefined = undefined;
 
     do {
-      textChunkRects = computeTextChunksRects(
+      textChunkRects = computeTextChunkRects(
         paragraphs,
         w,
         item.patterns,
@@ -58,13 +58,20 @@ function CanvasItemTextAux({
     );
 
     return [
-      textChunkRects.flatMap((paragraph) =>
-        paragraph.flatMap((lines) => lines.flat()),
+      alignTextChunkRects(
+        textChunkRects,
+        w,
+        h,
+        fontSize,
+        item.alignH,
+        item.alignV,
       ),
       fontSize,
     ];
   }, [
     h,
+    item.alignH,
+    item.alignV,
     item.fontFamily,
     item.fontSize,
     item.lineHeight,
@@ -114,7 +121,45 @@ type TextChunkMatch = {
   start: number;
 };
 
-function computeTextChunksRects(
+function alignTextChunkRects(
+  textChunkRects: TextChunkRect[][][],
+  w: number,
+  h: number,
+  fontSize: number,
+  alignH: LayoutItemText["alignH"],
+  alignV: LayoutItemText["alignV"],
+): TextChunkRect[] {
+  const lastTextChunkRect = last(last(last(textChunkRects)))!;
+  const offsetY = {
+    bottom: h - (lastTextChunkRect.y + fontSize),
+    middle: (h - (lastTextChunkRect.y + fontSize)) / 2,
+    top: 0,
+  }[alignV];
+
+  return textChunkRects.flatMap((paragraphTextChunkRects) => {
+    return paragraphTextChunkRects.flatMap((lineTextChunkRects) => {
+      const lineW = lineTextChunkRects.reduce(
+        (partialLineW, textChunkRect) => partialLineW + textChunkRect.w,
+        0,
+      );
+      const offsetX = {
+        center: (w - lineW) / 2,
+        left: 0,
+        right: w - lineW,
+      }[alignH];
+
+      return lineTextChunkRects.map((textChunkRect) => {
+        return {
+          ...textChunkRect,
+          x: textChunkRect.x + offsetX,
+          y: textChunkRect.y + offsetY,
+        };
+      });
+    });
+  });
+}
+
+function computeTextChunkRects(
   paragraphs: string[],
   w: number,
   patterns: LayoutItemText["patterns"],
