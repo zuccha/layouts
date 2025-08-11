@@ -1,6 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Stage } from "react-konva";
+import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
 
 export default function Canvas() {
@@ -37,7 +38,13 @@ export default function Canvas() {
   const y = size.h / 2 + offset.y;
 
   return (
-    <Box bgColor="bg.subtle" flex={1} h="full" ref={containerRef}>
+    <Box
+      bgColor="bg.subtle"
+      flex={1}
+      h="full"
+      position="relative"
+      ref={containerRef}
+    >
       <Stage height={size.h} width={size.w}>
         <Layer>
           <Group scale={{ x: scale, y: scale }} x={x} y={y}>
@@ -45,6 +52,13 @@ export default function Canvas() {
           </Group>
         </Layer>
       </Stage>
+
+      <CanvasDataSelector
+        bottom={10}
+        left={size.w / 2}
+        position="absolute"
+        transform="translateX(-50%)"
+      />
     </Box>
   );
 }
