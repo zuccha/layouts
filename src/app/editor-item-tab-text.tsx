@@ -1,11 +1,4 @@
-import {
-  Box,
-  Flex,
-  HStack,
-  Span,
-  createListCollection,
-  parseColor,
-} from "@chakra-ui/react";
+import { Box, Flex, HStack, Span, parseColor } from "@chakra-ui/react";
 import { useMemo } from "react";
 import {
   LuArrowDownToLine,
@@ -25,10 +18,10 @@ import {
 import { updateTextItemInActiveLayout } from "../app-store";
 import ButtonRadio from "../components/ui/button-radio";
 import ColorPicker from "../components/ui/color-picker";
+import Combobox from "../components/ui/combo-box";
 import IconButton from "../components/ui/icon-button";
 import Input from "../components/ui/input";
 import NumberInput from "../components/ui/number-input";
-import Select from "../components/ui/select";
 import ToggleIconButton from "../components/ui/toggle-icon-button";
 import {
   type LayoutItemText as LayoutItemText,
@@ -47,11 +40,9 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
   const fonts = useMemo(() => {
     const families = new Set<string>();
     document.fonts.forEach((font) => families.add(font.family));
-    return createListCollection({
-      items: [...families, "Times New Roman", "Arial"]
-        .sort()
-        .map((family) => ({ label: family, value: family })),
-    });
+    return [...families, "Times New Roman", "Arial"]
+      .sort()
+      .map((family) => ({ label: family, value: family }));
   }, []);
 
   return (
@@ -103,19 +94,19 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
 
       <Subsection label="Font">
         <HStack w="100%">
-          <Select
-            collection={fonts}
+          <Combobox
             flex={1}
-            onValueChange={(e) =>
+            onValueChange={(fontFamily) =>
               updateTextItemInActiveLayout(
                 item.id,
-                { fontFamily: e.value[0] ?? "" },
+                { fontFamily },
                 "font-family-editor",
               )
             }
-            placeholder="Font"
+            options={fonts}
+            placeholder="Font family"
             size="xs"
-            value={[item.fontFamily]}
+            value={item.fontFamily}
           />
         </HStack>
 
@@ -253,15 +244,14 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
               overflow="hidden"
               textOverflow="ellipsis"
             >
-              {pattern.type === "text" ? (
+              {pattern.type === "text" ?
                 <Span {...pattern.styles}>
                   {`${pattern.delimiter.open}TEXT${pattern.delimiter.close}`}
                 </Span>
-              ) : (
-                <Span>
+              : <Span>
                   {`${pattern.symbolPath}/${pattern.delimiter.open}SYMBOL${pattern.delimiter.close}.svg`}
                 </Span>
-              )}
+              }
             </Box>
 
             <Flex mr={-2}>

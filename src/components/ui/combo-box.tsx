@@ -1,53 +1,76 @@
 "use client";
 
 import {
-  Combobox as ChakraCombobox,
-  type ComboboxRootProps as ChakraComboboxRootProps,
+  HStack,
+  Icon,
+  Input,
+  InputGroup,
+  type InputProps,
+  Menu,
   Portal,
-  useListCollection,
 } from "@chakra-ui/react";
+import { LuCheck, LuChevronDown, LuCircleAlert } from "react-icons/lu";
 import { Tooltip } from "./tooltip";
 
 export type ComboboxProps = {
+  onValueChange: (value: string) => void;
   options: { label: string; value: string }[];
-} & Omit<
-  ChakraComboboxRootProps,
-  "collection" | "onInputValueChange" | "defaultInputValue" | "inputValue"
->;
+} & Omit<InputProps, "onChange">;
 
-export default function Combobox({ options, ...rest }: ComboboxProps) {
-  const { collection } = useListCollection({ initialItems: options });
-
+export default function Combobox({
+  onValueChange,
+  options,
+  value,
+  ...rest
+}: ComboboxProps) {
   return (
-    <ChakraCombobox.Root
-      {...rest}
-      collection={collection}
-      defaultInputValue={rest.value ? rest.value[0] : undefined}
-      onInputValueChange={(e) => e.inputValue}
-    >
-      <ChakraCombobox.Control>
+    <Menu.Root>
+      <InputGroup
+        endElement={
+          <HStack>
+            {!options.some((option) => option.label === value) && (
+              <Icon color="fg.error">
+                <LuCircleAlert />
+              </Icon>
+            )}
+            <Menu.Trigger>
+              <Icon w="1.5em">
+                <LuChevronDown />
+              </Icon>
+            </Menu.Trigger>
+          </HStack>
+        }
+      >
         <Tooltip content={rest.placeholder} showArrow>
-          <ChakraCombobox.Input placeholder="Type to search" />
+          <Input
+            {...rest}
+            onChange={(e) => onValueChange(e.target.value)}
+            value={value}
+          />
         </Tooltip>
-        <ChakraCombobox.IndicatorGroup>
-          <ChakraCombobox.ClearTrigger />
-          <ChakraCombobox.Trigger />
-        </ChakraCombobox.IndicatorGroup>
-      </ChakraCombobox.Control>
-
+      </InputGroup>
       <Portal>
-        <ChakraCombobox.Positioner>
-          <ChakraCombobox.Content>
-            <ChakraCombobox.Empty>No items found</ChakraCombobox.Empty>
-            {collection.items.map((item) => (
-              <ChakraCombobox.Item item={item} key={item.value}>
-                {item.label}
-                <ChakraCombobox.ItemIndicator />
-              </ChakraCombobox.Item>
+        <Menu.Positioner>
+          <Menu.Content>
+            {options.map((option) => (
+              <Menu.Item
+                key={option.value}
+                onClick={() => onValueChange(option.label)}
+                value={option.value}
+              >
+                <HStack align="center" justify="space-between" w="full">
+                  {option.label}
+                  {value === option.value && (
+                    <Icon>
+                      <LuCheck />
+                    </Icon>
+                  )}
+                </HStack>
+              </Menu.Item>
             ))}
-          </ChakraCombobox.Content>
-        </ChakraCombobox.Positioner>
+          </Menu.Content>
+        </Menu.Positioner>
       </Portal>
-    </ChakraCombobox.Root>
+    </Menu.Root>
   );
 }
