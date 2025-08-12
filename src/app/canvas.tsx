@@ -53,30 +53,34 @@ export default function Canvas() {
       position="relative"
       ref={containerRef}
     >
-      <Stage
-        height={size.h}
-        onClick={() => deselectActiveLayoutSelectedItem()}
-        width={size.w}
-      >
-        <Layer>
-          <Group scale={{ x: scale, y: scale }} x={x} y={y}>
-            <CanvasFrame />
+      {size.h > 0 && size.w > 0 && (
+        <>
+          <Stage
+            height={size.h}
+            onClick={() => deselectActiveLayoutSelectedItem()}
+            width={size.w}
+          >
+            <Layer>
+              <Group scale={{ x: scale, y: scale }} x={x} y={y}>
+                <CanvasFrame />
 
-            {selectedItemId && (
-              <CanvasSelection itemId={selectedItemId} scale={scale} />
-            )}
-          </Group>
+                {selectedItemId && (
+                  <CanvasSelection itemId={selectedItemId} scale={scale} />
+                )}
+              </Group>
 
-          <CanvasGuides h={size.h} scale={scale} w={size.w} x={x} y={y} />
-        </Layer>
-      </Stage>
+              <CanvasGuides h={size.h} scale={scale} w={size.w} x={x} y={y} />
+            </Layer>
+          </Stage>
 
-      <CanvasDataSelector
-        bottom={10}
-        left={size.w / 2}
-        position="absolute"
-        transform="translateX(-50%)"
-      />
+          <CanvasDataSelector
+            bottom={10}
+            left={size.w / 2}
+            position="absolute"
+            transform="translateX(-50%)"
+          />
+        </>
+      )}
     </Box>
   );
 }
