@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Stage } from "react-konva";
 import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
+import CanvasGuides from "./canvas-guides";
 
 export default function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +51,8 @@ export default function Canvas() {
           <Group scale={{ x: scale, y: scale }} x={x} y={y}>
             <CanvasFrame />
           </Group>
+
+          <CanvasGuides h={size.h} scale={scale} w={size.w} x={x} y={y} />
         </Layer>
       </Stage>
 
