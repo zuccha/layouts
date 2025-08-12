@@ -40,7 +40,7 @@ export default function CanvasItemBox({ children, item }: CanvasItemBoxProps) {
         width={w}
       />
 
-      <Group height={contentH} width={contentW} x={item.pl} y={item.pt}>
+      <Group x={item.pl} y={item.pt}>
         {children?.(contentW, contentH)}
       </Group>
     </Group>
