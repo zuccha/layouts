@@ -1,8 +1,8 @@
 import { Center, HStack, Span, Text, VStack } from "@chakra-ui/react";
 import { type ReactNode, useLayoutEffect, useState } from "react";
+import Canvas from "./app/canvas";
 import DownloadableFrame from "./app/downloadable-frame";
 import Editor from "./app/editor";
-import Preview from "./app/preview";
 import Sidebar from "./app/sidebar";
 import {
   history,
@@ -55,7 +55,7 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  if (state === "loading")
+  if (state === "loading" || state === "permissions-loading")
     return (
       <AppWrapper>
         <Center h="100vh">{/* <Spinner /> */}</Center>
@@ -103,7 +103,7 @@ function App() {
     <AppWrapper>
       <HStack flex={1} gap={0} position="relative" w="full">
         <Sidebar />
-        <Preview />
+        <Canvas />
         <Editor />
 
         <DownloadableFrame ref={downloadableFrameRef} />
