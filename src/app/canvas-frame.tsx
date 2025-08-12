@@ -20,13 +20,11 @@ export default function CanvasFrame() {
   const frameW = layoutSize.w + 2 * bleedW;
   const frameH = layoutSize.h + 2 * bleedH;
 
+  const frameX = -frameW / 2;
+  const frameY = -frameH / 2;
+
   return (
-    <Group
-      height={layoutSize.h}
-      width={layoutSize.w}
-      x={-frameW / 2}
-      y={-frameH / 2}
-    >
+    <Group height={layoutSize.h} width={layoutSize.w} x={frameX} y={frameY}>
       {bleed.visible && (
         <Rect fill={bleed.color} height={frameH} width={frameW} />
       )}
