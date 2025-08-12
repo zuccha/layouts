@@ -4,6 +4,7 @@ import { Group, Layer, Stage } from "react-konva";
 import {
   deselectActiveLayoutSelectedItem,
   useActiveLayoutSelectedItemId,
+  useCanvasFrameRef,
 } from "../app-store";
 import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
@@ -11,6 +12,8 @@ import CanvasGuides from "./canvas-guides";
 import CanvasSelection from "./canvas-selection";
 
 export default function Canvas() {
+  const canvasFrameRef = useCanvasFrameRef();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ h: 0, w: 0 });
   const [scale, setScale] = useState(1);
@@ -62,7 +65,7 @@ export default function Canvas() {
           >
             <Layer>
               <Group scale={{ x: scale, y: scale }} x={x} y={y}>
-                <CanvasFrame />
+                <CanvasFrame ref={canvasFrameRef} />
 
                 {selectedItemId && (
                   <CanvasSelection itemId={selectedItemId} scale={scale} />

@@ -1,7 +1,11 @@
 import { BlobWriter, Data64URIReader, ZipWriter } from "@zip.js/zip.js";
 import { useCallback } from "react";
-import { useDataList, useDownloadableFrameRef } from "../app-store";
-import type { Data } from "../models/data";
+import {
+  getActiveData,
+  switchToNextData,
+  useCanvasFrameRef,
+  useDataList,
+} from "../app-store";
 import { wait } from "../utils/promise";
 import { interpolateText } from "./use-interpolated-text";
 
@@ -17,41 +21,35 @@ export default function useExportDataList({
   const dataList = useDataList();
   const digitsCount = getDigitsCount(dataList.length);
 
-  const ref = useDownloadableFrameRef();
+  const ref = useCanvasFrameRef();
 
   return useCallback(async () => {
     const blobWriter = new BlobWriter("application/zip");
     const writer = new ZipWriter(blobWriter);
 
-    const exportData = async (data: Data, index: number) => {
+    const exportData = async () => {
+      const [data, index] = getActiveData();
+
       if (!ref.current)
         return Promise.reject(`useExportDataList(${index}): no ref`);
 
-      let callback: (ready: boolean) => void = () => {};
-      const readyPromise = new Promise<void>((resolve) => {
-        callback = (ready: boolean) => ready && resolve();
-        ref.current?.subscribeReady(callback);
-      });
+      const url = ref.current.toPng();
+      if (!url) return Promise.reject(`useExportDataList(${index}): no PNG`);
 
-      ref.current.setData(data);
-
-      await wait(1);
-      await readyPromise;
-      await wait(1);
-
-      ref.current.unsubscribeReady(callback);
-
-      const url = await ref.current.downloadPng();
       const reader = new Data64URIReader(url);
       const suffix = interpolateText(imageName, data);
-      const name = suffix
-        ? padL(`${index}`, digitsCount, "0") + "-" + suffix
+      const name =
+        suffix ?
+          padL(`${index}`, digitsCount, "0") + "-" + suffix
         : padL(`${index}`, digitsCount, "0");
       await writer.add(`${folder}/${name}.png`, reader);
+
+      switchToNextData();
+      await wait(10);
     };
 
     for (let i = 0; i < dataList.length; ++i) {
-      await exportData(dataList[i], i);
+      await exportData();
       onProgress(i);
     }
 
