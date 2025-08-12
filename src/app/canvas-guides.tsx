@@ -1,5 +1,5 @@
 import { Group } from "react-konva";
-import { useActiveLayoutBleed, useActiveLayoutSize } from "../app-store";
+import useActiveLayoutFrame from "../hooks/use-active-layout-frame";
 import { useShowBleedGuide, useShowCardGuide } from "../hooks/use-settings";
 import CanvasGuide from "./canvas-guide";
 
@@ -15,17 +15,8 @@ export default function CanvasGuides({ h, scale, w, x, y }: CanvasGuidesProps) {
   const [showCardGuide] = useShowCardGuide();
   const [showBleedGuide] = useShowBleedGuide();
 
-  const bleed = useActiveLayoutBleed();
-  const bleedW = bleed.visible ? bleed.w : 0;
-  const bleedH = bleed.visible ? bleed.h : 0;
-
-  const layoutSize = useActiveLayoutSize();
-
-  const frameW = layoutSize.w + 2 * bleedW;
-  const frameH = layoutSize.h + 2 * bleedH;
-
-  const frameX = -frameW / 2;
-  const frameY = -frameH / 2;
+  const { bleedVisible, frameX, frameY, layoutH, layoutW } =
+    useActiveLayoutFrame();
 
   const guideStroke = 2;
   const guideW = w / scale;
@@ -39,15 +30,15 @@ export default function CanvasGuides({ h, scale, w, x, y }: CanvasGuidesProps) {
   };
 
   const layoutGuide = {
-    x0: x / scale + layoutSize.w / 2 - guideStroke,
-    x1: x / scale - layoutSize.w / 2,
-    y0: y / scale + layoutSize.h / 2 - guideStroke,
-    y1: y / scale - layoutSize.h / 2,
+    x0: x / scale + layoutW / 2 - guideStroke,
+    x1: x / scale - layoutW / 2,
+    y0: y / scale + layoutH / 2 - guideStroke,
+    y1: y / scale - layoutH / 2,
   };
 
   return (
     <Group scale={{ x: scale, y: scale }}>
-      {showBleedGuide && bleed.visible && (
+      {showBleedGuide && bleedVisible && (
         <CanvasGuide
           color="#c084fc"
           h={guideH}
