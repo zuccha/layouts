@@ -1,7 +1,10 @@
 import { Box } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Stage } from "react-konva";
-import { useActiveLayoutSelectedItemId } from "../app-store";
+import {
+  deselectActiveLayoutSelectedItem,
+  useActiveLayoutSelectedItemId,
+} from "../app-store";
 import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
 import CanvasGuides from "./canvas-guides";
@@ -50,7 +53,11 @@ export default function Canvas() {
       position="relative"
       ref={containerRef}
     >
-      <Stage height={size.h} width={size.w}>
+      <Stage
+        height={size.h}
+        onClick={() => deselectActiveLayoutSelectedItem()}
+        width={size.w}
+      >
         <Layer>
           <Group scale={{ x: scale, y: scale }} x={x} y={y}>
             <CanvasFrame />

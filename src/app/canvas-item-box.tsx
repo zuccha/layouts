@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Group, Rect } from "react-konva";
+import { selectActiveLayoutSelectedItem } from "../app-store";
 import type { LayoutItemBox } from "../models/layout";
 
 export type CanvasItemBoxProps = {
@@ -17,6 +18,10 @@ export default function CanvasItemBox({ children, item }: CanvasItemBoxProps) {
   return (
     <Group
       height={h}
+      onClick={(e) => {
+        e.cancelBubble = true;
+        selectActiveLayoutSelectedItem(item.id);
+      }}
       width={w}
       x={item.x0 + item.border.width / 2}
       y={item.y0 + item.border.width / 2}
