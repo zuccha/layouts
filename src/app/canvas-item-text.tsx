@@ -1,6 +1,8 @@
 import type { Data } from "@dnd-kit/core";
 import { useMemo } from "react";
-import { Text } from "react-konva";
+import { Image, Text } from "react-konva";
+import useImage from "use-image";
+import useImageUrl from "../hooks/use-image-url";
 import useInterpolatedText from "../hooks/use-interpolated-text";
 import type { LayoutItemText } from "../models/layout";
 import type { TextFont } from "../utils/text-chunk";
@@ -56,6 +58,7 @@ function CanvasItemTextAux({
           transform: pattern.styles.textTransform,
         },
         includeDelimiter: pattern.delimiterMode === "include",
+        symbolPath: pattern.symbolPath,
       })),
     [item.patterns],
   );
@@ -84,20 +87,44 @@ function CanvasItemTextAux({
     w,
   ]);
 
-  return textChunkRects.map((textChunkRect, i) => (
-    <Text
-      fill={item.textColor}
-      fontFamily={item.fontFamily}
-      fontSize={fontSize}
-      fontStyle={textChunkRect.style ?? font.style}
-      height={fontSize}
-      key={i}
-      text={textChunkRect.text}
-      width={textChunkRect.w}
-      x={textChunkRect.x}
-      y={textChunkRect.y}
-    />
-  ));
+  return textChunkRects.map((rect, i) =>
+    rect.symbolPath ?
+      <Symbol
+        key={i}
+        size={rect.w}
+        source={`${rect.symbolPath}/${rect.text}.svg`}
+        x={rect.x}
+        y={rect.y}
+      />
+    : <Text
+        fill={item.textColor}
+        fontFamily={item.fontFamily}
+        fontSize={fontSize}
+        fontStyle={rect.style ?? font.style}
+        height={fontSize}
+        key={i}
+        text={rect.text}
+        width={rect.w}
+        x={rect.x}
+        y={rect.y}
+      />,
+  );
+}
+
+function Symbol({
+  size,
+  source,
+  x,
+  y,
+}: {
+  size: number;
+  source: string;
+  x: number;
+  y: number;
+}) {
+  const url = useImageUrl(source);
+  const [image] = useImage(url ?? "");
+  return <Image height={size} image={image} width={size} x={x} y={y} />;
 }
 
 function computeFontStyle(
