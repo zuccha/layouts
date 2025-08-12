@@ -1,15 +1,19 @@
 import { Box } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Stage } from "react-konva";
+import { useActiveLayoutSelectedItemId } from "../app-store";
 import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
 import CanvasGuides from "./canvas-guides";
+import CanvasSelection from "./canvas-selection";
 
 export default function Canvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ h: 0, w: 0 });
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const selectedItemId = useActiveLayoutSelectedItemId();
 
   const resize = () => {
     if (!containerRef.current) return;
@@ -50,6 +54,8 @@ export default function Canvas() {
         <Layer>
           <Group scale={{ x: scale, y: scale }} x={x} y={y}>
             <CanvasFrame />
+
+            {selectedItemId && <CanvasSelection itemId={selectedItemId} />}
           </Group>
 
           <CanvasGuides h={size.h} scale={scale} w={size.w} x={x} y={y} />
