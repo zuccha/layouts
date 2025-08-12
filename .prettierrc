@@ -1,3 +1,4 @@
 {
+  "experimentalTernaries": true,
   "quoteProps": "consistent"
 }
