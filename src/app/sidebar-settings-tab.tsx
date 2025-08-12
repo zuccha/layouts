@@ -1,15 +1,12 @@
 import { Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
+import { LuCircleCheck, LuCircleX, LuFolderOpen, LuX } from "react-icons/lu";
 import {
-  LuCircleCheck,
-  LuCircleX,
-  LuFolderOpen,
-  LuPlus,
-  LuX,
-} from "react-icons/lu";
-import {
+  clearFontsDirectory,
   clearImagesDirectory,
+  openFontsDirectory,
   openImagesDirectory,
+  useFontsDirectoryHandle,
   useImagesDirectoryHandle,
 } from "../app-store";
 import IconButton from "../components/ui/icon-button";
@@ -18,80 +15,101 @@ import Subsection from "./subsection";
 
 export default function SidebarSettingsTab() {
   const imagesDirectoryHandle = useImagesDirectoryHandle();
+  const fontsDirectoryHandle = useFontsDirectoryHandle();
 
   return (
     <VStack gap={0}>
-      <Subsection
-        actions={
-          <SidebarSettingsTabActions
-            hasImagesDirectoryHandle={!!imagesDirectoryHandle}
-          />
-        }
-        label="Images Folder"
-      >
-        {imagesDirectoryHandle ? (
-          <HStack>
-            <Icon color="fg.success" size="sm">
-              <LuCircleCheck />
-            </Icon>
-            <Text fontSize="sm">{imagesDirectoryHandle.name}</Text>
-          </HStack>
-        ) : (
-          <HStack>
-            <Icon color="fg.error" size="sm">
-              <LuCircleX />
-            </Icon>
-            <Text fontSize="sm">None</Text>
-          </HStack>
-        )}
-      </Subsection>
+      <DirectorySetting
+        directoryHandle={imagesDirectoryHandle}
+        label="Images"
+        onClearDirectory={clearImagesDirectory}
+        onOpenDirectory={openImagesDirectory}
+      />
 
-      <Subsection
-        actions={
-          <IconButton
-            Icon={LuPlus}
-            aria-label="Add font"
-            onClick={() => {}}
-            size="xs"
-            variant="ghost"
-          />
-        }
+      <DirectorySetting
+        directoryHandle={fontsDirectoryHandle}
         label="Fonts"
-        mr={-2}
-      >
-        <Text fontSize="sm">...</Text>
-      </Subsection>
+        onClearDirectory={clearFontsDirectory}
+        onOpenDirectory={openFontsDirectory}
+      />
     </VStack>
   );
 }
 
-function SidebarSettingsTabActions({
-  hasImagesDirectoryHandle,
+function DirectorySetting({
+  directoryHandle,
+  label,
+  onClearDirectory,
+  onOpenDirectory,
 }: {
-  hasImagesDirectoryHandle: boolean;
+  directoryHandle: FileSystemDirectoryHandle | undefined;
+  label: string;
+  onClearDirectory: () => Promise<string | undefined>;
+  onOpenDirectory: () => Promise<string | undefined>;
+}) {
+  return (
+    <Subsection
+      actions={
+        <DirectorySettingActions
+          hasDirectoryHandle={!!directoryHandle}
+          label={label.toLowerCase()}
+          onClearDirectory={onClearDirectory}
+          onOpenDirectory={onOpenDirectory}
+        />
+      }
+      label={`${label} Folder`}
+    >
+      {directoryHandle ?
+        <HStack>
+          <Icon color="fg.success" size="sm">
+            <LuCircleCheck />
+          </Icon>
+          <Text fontSize="sm">{directoryHandle.name}</Text>
+        </HStack>
+      : <HStack>
+          <Icon color="fg.error" size="sm">
+            <LuCircleX />
+          </Icon>
+          <Text fontSize="sm">None</Text>
+        </HStack>
+      }
+    </Subsection>
+  );
+}
+
+function DirectorySettingActions({
+  hasDirectoryHandle,
+  label,
+  onClearDirectory,
+  onOpenDirectory,
+}: {
+  hasDirectoryHandle: boolean;
+  label: string;
+  onClearDirectory: () => Promise<string | undefined>;
+  onOpenDirectory: () => Promise<string | undefined>;
 }) {
   const [loading, setLoading] = useState(false);
 
   const remove = useCallback(async () => {
     setLoading(true);
-    const error = await clearImagesDirectory();
+    const error = await onClearDirectory();
     if (error) toaster.create({ title: error, type: "error" });
     setLoading(false);
-  }, []);
+  }, [onClearDirectory]);
 
   const open = useCallback(async () => {
     setLoading(true);
-    const error = await openImagesDirectory();
+    const error = await onOpenDirectory();
     if (error) toaster.create({ title: error, type: "error" });
     setLoading(false);
-  }, []);
+  }, [onOpenDirectory]);
 
   return (
     <Flex mr={-2}>
       <IconButton
         Icon={LuX}
-        aria-label="Clear images folder"
-        disabled={loading || !hasImagesDirectoryHandle}
+        aria-label={`Clear ${label} folder`}
+        disabled={loading || !hasDirectoryHandle}
         onClick={remove}
         size="xs"
         variant="ghost"
@@ -99,7 +117,7 @@ function SidebarSettingsTabActions({
 
       <IconButton
         Icon={LuFolderOpen}
-        aria-label="Open images folder"
+        aria-label={`Open ${label} folder`}
         disabled={loading}
         onClick={open}
         size="xs"

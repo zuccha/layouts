@@ -14,6 +14,7 @@ import {
 } from "./models/layout";
 import type { Updater } from "./models/updater";
 import { ensurePermission } from "./utils/file-system-handles";
+import { inferFontVariant } from "./utils/font";
 import { createHistory } from "./utils/history";
 import { createObservable } from "./utils/observable";
 import { createObservableById } from "./utils/observable-by-id";
@@ -49,6 +50,7 @@ type State = {
   dataIndex: number;
   dataList: DataList;
   dataUnsavedChanges: boolean;
+  fontsDirectoryDirHandle: FileSystemDirectoryHandle | undefined;
   imagesDirectoryDirHandle: FileSystemDirectoryHandle | undefined;
 };
 
@@ -60,6 +62,7 @@ const state: State = {
   dataIndex: 0,
   dataList: [{}],
   dataUnsavedChanges: false,
+  fontsDirectoryDirHandle: undefined,
   imagesDirectoryDirHandle: undefined,
 };
 
@@ -73,6 +76,7 @@ const dataFileHandleKey = "data-file-handle";
 
 const dirHandlesStore = createStoreDB<FileSystemDirectoryHandle>("dir-handles");
 const imagesDirectoryHandleKey = "images-directory-handle";
+const fontsDirectoryHandleKey = "fonts-directory-handle";
 
 initializeStores();
 
@@ -139,6 +143,11 @@ export const {
   subscribe: subscribeImagesDirectoryHandle,
 } = createObservable<State["imagesDirectoryDirHandle"]>();
 
+export const {
+  notify: notifyFontsDirectoryHandle,
+  subscribe: subscribeFontsDirectoryHandle,
+} = createObservable<State["fontsDirectoryDirHandle"]>();
+
 //------------------------------------------------------------------------------
 // Check Permissions
 //------------------------------------------------------------------------------
@@ -148,6 +157,7 @@ export async function shouldRequestPermissions(): Promise<boolean> {
     fileHandlesStore.load(activeLayoutFileHandleKey),
     fileHandlesStore.load(dataFileHandleKey),
     dirHandlesStore.load(imagesDirectoryHandleKey),
+    dirHandlesStore.load(fontsDirectoryHandleKey),
   ]);
 
   const statuses = await Promise.all(
@@ -165,6 +175,8 @@ export async function initialize() {
   await initializeActiveLayout();
   await initializeData();
   await initializeImagesDirectory();
+  await initializeFontsDirectory();
+  await loadFonts();
 }
 
 //------------------------------------------------------------------------------
@@ -1034,6 +1046,121 @@ export const clearImagesDirectory: WithSource<
 };
 
 //------------------------------------------------------------------------------
+// Initialize Fonts Directory
+//------------------------------------------------------------------------------
+
+async function _initializeFontsDirectory(): Promise<string | undefined> {
+  try {
+    const dirHandle = await dirHandlesStore.load(fontsDirectoryHandleKey);
+    if (dirHandle) {
+      if (await ensurePermission(dirHandle, "read")) {
+        await dirHandlesStore.save(fontsDirectoryHandleKey, dirHandle);
+        state.fontsDirectoryDirHandle = dirHandle;
+        notifyFontsDirectoryHandle(dirHandle);
+      } else {
+        await dirHandlesStore.remove(fontsDirectoryHandleKey);
+        return "You don't have the permissions to access the saved fonts folder";
+      }
+    }
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      return undefined;
+    } else {
+      console.error("Directory open error:", err);
+      return "An error occurred while initializing the fonts folder";
+    }
+  }
+  return undefined;
+}
+
+export const initializeFontsDirectory: WithSource<
+  typeof _initializeFontsDirectory
+> = () => {
+  history.clear();
+  return _initializeFontsDirectory();
+};
+
+//------------------------------------------------------------------------------
+// Open Fonts Directory
+//------------------------------------------------------------------------------
+
+async function _openFontsDirectory(): Promise<string | undefined> {
+  try {
+    const dirHandle = await window.showDirectoryPicker();
+    await dirHandlesStore.save(fontsDirectoryHandleKey, dirHandle);
+    state.fontsDirectoryDirHandle = dirHandle;
+    notifyFontsDirectoryHandle(dirHandle);
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      return undefined;
+    } else {
+      console.error("Directory open error:", err);
+      return "An error occurred while choosing the fonts folder";
+    }
+  }
+  return undefined;
+}
+
+export const openFontsDirectory: WithSource<
+  typeof _openFontsDirectory
+> = () => {
+  history.clear();
+  return _openFontsDirectory();
+};
+
+//------------------------------------------------------------------------------
+// Clear Fonts Directory
+//------------------------------------------------------------------------------
+
+async function _clearFontsDirectory(): Promise<string | undefined> {
+  try {
+    await dirHandlesStore.remove(fontsDirectoryHandleKey);
+    state.fontsDirectoryDirHandle = undefined;
+    notifyFontsDirectoryHandle(undefined);
+  } catch (err) {
+    console.error("Fonts directory removal error:", err);
+    return "An error occurred while removing fonts folder";
+  }
+  return undefined;
+}
+
+export const clearFontsDirectory: WithSource<
+  typeof _clearFontsDirectory
+> = () => {
+  history.clear();
+  return _clearFontsDirectory();
+};
+
+//------------------------------------------------------------------------------
+// Load Fonts
+//------------------------------------------------------------------------------
+
+export async function loadFonts(): Promise<void> {
+  const exts = new Set([".ttf", ".otf", ".woff", ".woff2"]);
+  const families = new Set<string>();
+
+  if (state.fontsDirectoryDirHandle) {
+    const files = state.fontsDirectoryDirHandle.entries();
+    for await (const [filename, fileHandle] of files) {
+      const ext = filename.slice(filename.lastIndexOf(".")).toLowerCase();
+      if (fileHandle.kind === "file" && exts.has(ext)) {
+        const name = filename.replace(new RegExp(`${ext}$`), "");
+        const { family, style, weight } = inferFontVariant(name);
+        const data = await (await fileHandle.getFile()).arrayBuffer();
+        const face = new FontFace(family, data, { style, weight });
+        await face.load();
+        document.fonts.add(face);
+        await document.fonts.load(`16px "${family}"`);
+        families.add(family);
+      }
+    }
+    for (const family of families) await document.fonts.load(`16px ${family}`);
+  }
+
+  await document.fonts.ready;
+}
+
+//------------------------------------------------------------------------------
 // Use Active Layout Name
 //------------------------------------------------------------------------------
 
@@ -1192,6 +1319,16 @@ export function useDataUnsavedChanges(): boolean {
 export function useImagesDirectoryHandle(): State["imagesDirectoryDirHandle"] {
   const [dirHandle, setDirHandle] = useState(state.imagesDirectoryDirHandle);
   useLayoutEffect(() => subscribeImagesDirectoryHandle(setDirHandle), []);
+  return dirHandle;
+}
+
+//------------------------------------------------------------------------------
+// Use Fonts Directory Handle
+//------------------------------------------------------------------------------
+
+export function useFontsDirectoryHandle(): State["fontsDirectoryDirHandle"] {
+  const [dirHandle, setDirHandle] = useState(state.fontsDirectoryDirHandle);
+  useLayoutEffect(() => subscribeFontsDirectoryHandle(setDirHandle), []);
   return dirHandle;
 }
 
