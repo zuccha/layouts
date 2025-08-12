@@ -9,14 +9,14 @@ export default function useImageUrl(source: string): string | undefined {
 
   useLayoutEffect(() => {
     const loadSrc = async () => {
-      if (source.startsWith("http://") || source.startsWith("https://"))
-        return setUrl(source);
-      // if (source.startsWith("http://") || source.startsWith("https://")) {
-      //   const image = await fetch(source);
-      //   const blob = await image.blob();
-      //   const url = URL.createObjectURL(blob);
-      //   return setUrl(url);
-      // }
+      // if (source.startsWith("http://") || source.startsWith("https://"))
+      //   return setUrl(source);
+      if (source.startsWith("http://") || source.startsWith("https://")) {
+        const image = await fetch(source);
+        const blob = await image.blob();
+        const url = URL.createObjectURL(blob);
+        return setUrl(url);
+      }
 
       if (!dirHandle) return setUrl(undefined);
 
