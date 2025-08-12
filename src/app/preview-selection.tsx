@@ -54,7 +54,7 @@ export default function PreviewSelection({
       h={`${h}px`}
       left={`${x}px`}
       onClick={(e) => e.stopPropagation()}
-      onPointerDown={move}
+      onPointerDown={(e) => move(e.nativeEvent)}
       position="absolute"
       top={`${y}px`}
       w={`${w}px`}
@@ -82,7 +82,7 @@ function CornerHandle({
   border: number;
   pos: "bl" | "br" | "tl" | "tr";
   offset: number | string;
-  onResize: (e: React.PointerEvent) => void;
+  onResize: (e: PointerEvent) => void;
   size: number;
 }) {
   const props = {
@@ -101,7 +101,7 @@ function CornerHandle({
       boxSizing="content-box"
       h={`${size}px`}
       onClick={(e) => e.stopPropagation()}
-      onPointerDown={onResize}
+      onPointerDown={(e) => onResize(e.nativeEvent)}
       position="absolute"
       w={`${size}px`}
     />
@@ -117,7 +117,7 @@ function SideHandle({
 }: {
   h: number;
   offset: number | string;
-  onResize: (e: React.PointerEvent) => void;
+  onResize: (e: PointerEvent) => void;
   pos: "b" | "l" | "r" | "t";
   w: number;
 }) {
@@ -133,7 +133,7 @@ function SideHandle({
       {...props}
       h={`${h}px`}
       onClick={(e) => e.stopPropagation()}
-      onPointerDown={onResize}
+      onPointerDown={(e) => onResize(e.nativeEvent)}
       position="absolute"
       w={`${w}px`}
     />

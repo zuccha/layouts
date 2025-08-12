@@ -8,7 +8,7 @@ export default function useDrag(
   const deltaRef = useRef({ x: 0, y: 0 });
 
   return useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       e.stopPropagation();
       posRef.current = { x: e.clientX, y: e.clientY };
       deltaRef.current = { x: 0, y: 0 };

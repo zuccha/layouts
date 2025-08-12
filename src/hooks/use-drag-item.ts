@@ -41,7 +41,7 @@ export default function useDragItem(
   const onDragStart = useDrag(onDrag, clearActiveLayoutSelectedItemSnapping);
 
   return useCallback(
-    (e: React.PointerEvent) => {
+    (e: PointerEvent) => {
       prevItemRef.current = item;
       dragIdRef.current = `drag-${crypto.randomUUID()}`;
       onDragStart(e);
