@@ -152,9 +152,9 @@ export async function shouldRequestPermissions(): Promise<boolean> {
 
   const statuses = await Promise.all(
     handles.map((handle) =>
-      handle
-        ? handle.queryPermission({ mode: "read" })
-        : Promise.resolve("granted" as PermissionState),
+      handle ?
+        handle.queryPermission({ mode: "read" })
+      : Promise.resolve("granted" as PermissionState),
     ),
   );
 
@@ -673,9 +673,9 @@ function near(value: number, target: number, range: number): boolean {
 
 function _reorderItemsInActiveLayout(idsOrUpdateIds: Updater<string[]>): void {
   const ids =
-    typeof idsOrUpdateIds === "function"
-      ? idsOrUpdateIds(state.activeLayout.items.ids)
-      : idsOrUpdateIds;
+    typeof idsOrUpdateIds === "function" ?
+      idsOrUpdateIds(state.activeLayout.items.ids)
+    : idsOrUpdateIds;
   if (state.activeLayout.items.ids.length !== ids.length) return;
   if (ids.some((id) => !state.activeLayout.items.byId[id])) return;
   state.activeLayout.items.ids = ids;
@@ -714,9 +714,9 @@ export const selectActiveLayoutSelectedItem: WithSource<
     id: source ? `selectActiveLayoutSelectedItem/${source}` : undefined,
     redo: () => _selectActiveLayoutSelectedItem(id),
     undo: () =>
-      prevSelectedItemId
-        ? _selectActiveLayoutSelectedItem(prevSelectedItemId)
-        : _deselectActiveLayoutSelectedItem(),
+      prevSelectedItemId ?
+        _selectActiveLayoutSelectedItem(prevSelectedItemId)
+      : _deselectActiveLayoutSelectedItem(),
   });
   return _selectActiveLayoutSelectedItem(id);
 };
@@ -767,8 +767,9 @@ async function _initializeData(): Promise<string | undefined> {
         const json = JSON.parse(content);
         const dataResponse = dataResponseSchema.parse(json);
         await fileHandlesStore.save(dataFileHandleKey, fileHandle);
-        state.dataList = Array.isArray(dataResponse)
-          ? (dataResponse as DataList)
+        state.dataList =
+          Array.isArray(dataResponse) ?
+            (dataResponse as DataList)
           : [dataResponse];
         notifyDataList(state.dataList);
         state.dataIndex = 0;
@@ -813,9 +814,8 @@ async function _openData(): Promise<string | undefined> {
     const json = JSON.parse(content);
     const dataResponse = dataResponseSchema.parse(json);
     await fileHandlesStore.save(dataFileHandleKey, fileHandle);
-    state.dataList = Array.isArray(dataResponse)
-      ? (dataResponse as DataList)
-      : [dataResponse];
+    state.dataList =
+      Array.isArray(dataResponse) ? (dataResponse as DataList) : [dataResponse];
     notifyDataList(state.dataList);
     state.dataIndex = 0;
     notifyDataIndex(state.dataIndex);
