@@ -45,7 +45,7 @@ export default function useExportDataList({
       await writer.add(`${folder}/${name}.png`, reader);
 
       switchToNextData();
-      await wait(10);
+      await wait(100);
     };
 
     for (let i = 0; i < dataList.length; ++i) {
