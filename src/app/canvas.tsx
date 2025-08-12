@@ -55,7 +55,9 @@ export default function Canvas() {
           <Group scale={{ x: scale, y: scale }} x={x} y={y}>
             <CanvasFrame />
 
-            {selectedItemId && <CanvasSelection itemId={selectedItemId} />}
+            {selectedItemId && (
+              <CanvasSelection itemId={selectedItemId} scale={scale} />
+            )}
           </Group>
 
           <CanvasGuides h={size.h} scale={scale} w={size.w} x={x} y={y} />

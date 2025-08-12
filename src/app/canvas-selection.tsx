@@ -1,13 +1,20 @@
 import { Group, Rect } from "react-konva";
 import { useActiveLayoutItem } from "../app-store";
 import useActiveLayoutFrame from "../hooks/use-active-layout-frame";
+import useDragItem from "../hooks/use-drag-item";
 
 export type CanvasSelectionProps = {
   itemId: string;
+  scale: number;
 };
 
-export default function CanvasSelection({ itemId }: CanvasSelectionProps) {
+export default function CanvasSelection({
+  itemId,
+  scale,
+}: CanvasSelectionProps) {
   const item = useActiveLayoutItem(itemId);
+
+  const move = useDragItem(item, scale, "move");
 
   const { bleedH, bleedW, frameX, frameY } = useActiveLayoutFrame();
 
@@ -20,6 +27,8 @@ export default function CanvasSelection({ itemId }: CanvasSelectionProps) {
     <Group>
       <Rect
         height={h}
+        onClick={(e) => e.evt.stopPropagation()}
+        onPointerDown={(e) => move(e.evt)}
         stroke="#60a5fa"
         strokeWidth={strokeWidth}
         width={w}
