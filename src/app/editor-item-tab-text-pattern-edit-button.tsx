@@ -1,8 +1,10 @@
 import {
+  Flex,
   GridItem,
   HStack,
   SimpleGrid,
   Span,
+  Switch,
   VStack,
   createListCollection,
 } from "@chakra-ui/react";
@@ -116,7 +118,7 @@ export default function EditorItemTabTextPatternEditButton({
         </Group>
 
         <GridItem colSpan={2}>
-          {pattern.type === "text" ? (
+          {pattern.type === "text" ?
             <Group label="Style">
               <HStack w="full">
                 <ButtonRadio
@@ -150,18 +152,30 @@ export default function EditorItemTabTextPatternEditButton({
                 />
               </HStack>
             </Group>
-          ) : (
-            <Group label="Symbol path">
-              <HStack w="full">
+          : <HStack>
+              <Group label="Symbol path">
                 <Input
                   aria-label="Symbol path"
                   onChange={(e) => update({ symbolPath: e.target.value })}
                   placeholder="images/symbols"
                   value={pattern.symbolPath}
                 />
-              </HStack>
-            </Group>
-          )}
+              </Group>
+              <Group label="Shadow">
+                <Flex h="2.5rem">
+                  <Switch.Root
+                    checked={pattern.symbolShadow}
+                    onClick={() =>
+                      update({ symbolShadow: !pattern.symbolShadow })
+                    }
+                    size="lg"
+                  >
+                    <Switch.Control></Switch.Control>
+                  </Switch.Root>
+                </Flex>
+              </Group>
+            </HStack>
+          }
         </GridItem>
       </SimpleGrid>
     </FormDialogButton>

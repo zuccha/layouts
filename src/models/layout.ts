@@ -40,6 +40,7 @@ export const patternSchema = z.object({
   delimiterMode: z.enum(["include", "exclude"]).default("exclude"),
   styles: patternStylesSchema.default(patternStylesSchema.parse({})),
   symbolPath: z.string().default(""),
+  symbolShadow: z.boolean().default(false),
   type: z.enum(["symbol", "text"]).default("text"),
 });
 

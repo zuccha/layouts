@@ -58,7 +58,10 @@ function CanvasItemTextAux({
           transform: pattern.styles.textTransform,
         },
         includeDelimiter: pattern.delimiterMode === "include",
-        symbolPath: pattern.symbolPath,
+        symbol:
+          pattern.type === "symbol" ?
+            { path: pattern.symbolPath, shadow: pattern.symbolShadow }
+          : undefined,
       })),
     [item.patterns],
   );
@@ -88,11 +91,12 @@ function CanvasItemTextAux({
   ]);
 
   return textChunkRects.map((rect, i) =>
-    rect.symbolPath ?
+    rect.symbol ?
       <Symbol
         key={i}
+        shadow={rect.symbol.shadow}
         size={rect.w}
-        source={`${rect.symbolPath}/${rect.text}.svg`}
+        source={`${rect.symbol.path}/${rect.text}.svg`}
         x={rect.x}
         y={rect.y}
       />
@@ -112,11 +116,13 @@ function CanvasItemTextAux({
 }
 
 function Symbol({
+  shadow,
   size,
   source,
   x,
   y,
 }: {
+  shadow: boolean;
   size: number;
   source: string;
   x: number;
@@ -124,7 +130,18 @@ function Symbol({
 }) {
   const url = useImageUrl(source);
   const [image] = useImage(url ?? "");
-  return <Image height={size} image={image} width={size} x={x} y={y} />;
+  return (
+    <Image
+      cornerRadius={100}
+      height={size}
+      image={image}
+      shadowColor={shadow ? "black" : undefined}
+      shadowOffset={shadow ? { x: 1, y: 1 } : undefined}
+      width={size}
+      x={x}
+      y={y}
+    />
+  );
 }
 
 function computeFontStyle(

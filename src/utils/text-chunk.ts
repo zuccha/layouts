@@ -11,6 +11,8 @@ export type TextFont = {
   transform?: "none" | "capitalize" | "lowercase" | "uppercase";
 };
 
+export type TextSymbol = { path: string; shadow: boolean };
+
 export type PatternFormatting = {
   style?: "normal" | "bold" | "italic" | "bold italic";
   transform?: "none" | "capitalize" | "lowercase" | "uppercase";
@@ -20,12 +22,12 @@ export type TextPattern = {
   delimiter: { close: string; open: string };
   includeDelimiter: boolean;
   formatting: PatternFormatting;
-  symbolPath?: string;
+  symbol?: TextSymbol;
 };
 
 export type TextChunk = {
   style: PatternFormatting["style"];
-  symbolPath?: string;
+  symbol?: TextSymbol;
   text: string;
   w: number;
 };
@@ -51,9 +53,9 @@ function measureRawText(
   text: string,
   font: TextFont,
   style: PatternFormatting["style"],
-  symbolPath: string | undefined,
+  symbol: TextSymbol | undefined,
 ): number {
-  if (symbolPath) return font.size;
+  if (symbol) return font.size;
   const textNode = new Konva.Text({
     fontFamily: font.family,
     fontSize: font.size,
@@ -71,7 +73,7 @@ function formatRawText(
   text: string,
   font: TextFont,
   formatting: PatternFormatting,
-  symbolPath: string | undefined,
+  symbol: TextSymbol | undefined,
 ): TextChunk[] {
   const chunks: TextChunk[] = [];
   const transform = formatting.transform ?? font.transform;
@@ -83,8 +85,8 @@ function formatRawText(
 
   const parts = formattedText.match(/(\s+|[^\s]+)/g) || [];
   for (const part of parts) {
-    const w = measureRawText(part, font, formatting.style, symbolPath);
-    chunks.push({ style: formatting.style, symbolPath, text: part, w });
+    const w = measureRawText(part, font, formatting.style, symbol);
+    chunks.push({ style: formatting.style, symbol, text: part, w });
   }
 
   return chunks;
@@ -101,26 +103,18 @@ function breakTextChunk(
 ): TextChunk[] {
   if (chunk.w < maxW || chunk.text.length <= 1) return [chunk];
 
-  const { style, symbolPath } = chunk;
+  const { style, symbol } = chunk;
   const middle = Math.floor(chunk.text.length / 2);
   const left = chunk.text.slice(0, middle);
   const right = chunk.text.slice(middle);
   return [
     ...breakTextChunk(
-      {
-        ...chunk,
-        text: left,
-        w: measureRawText(left, font, style, symbolPath),
-      },
+      { ...chunk, text: left, w: measureRawText(left, font, style, symbol) },
       font,
       maxW,
     ),
     ...breakTextChunk(
-      {
-        ...chunk,
-        text: right,
-        w: measureRawText(right, font, style, symbolPath),
-      },
+      { ...chunk, text: right, w: measureRawText(right, font, style, symbol) },
       font,
       maxW,
     ),
@@ -176,7 +170,7 @@ function parseRawTextPatterns(
       : rawParagraph.slice(start + open.length, end);
 
     chunks.push(
-      ...formatRawText(text, font, pattern.formatting, pattern.symbolPath),
+      ...formatRawText(text, font, pattern.formatting, pattern.symbol),
     );
 
     cursor = end + close.length;
