@@ -31,11 +31,16 @@ export default function NumberInput({
       onValueChange={
         onValueChange ? (e) => onValueChange(e.valueAsNumber) : undefined
       }
-      value={value === undefined ? undefined : isNaN(value) ? "" : `${value}`}
+      value={
+        value === undefined ? undefined
+        : isNaN(value) ?
+          ""
+        : `${value}`
+      }
       {...props}
     >
       <ChakraNumberInput.Control />
-      <Tooltip content={props.placeholder} showArrow>
+      <Tooltip content={props.placeholder || props["aria-label"]} showArrow>
         <InputGroup
           startElement={
             label ? <Text fontSize={props.size}>{label}</Text> : undefined
