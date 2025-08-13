@@ -40,9 +40,7 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
   const fonts = useMemo(() => {
     const families = new Set<string>();
     document.fonts.forEach((font) => families.add(font.family));
-    return [...families, "Times New Roman", "Arial"]
-      .sort()
-      .map((family) => ({ label: family, value: family }));
+    return [...families, "Times New Roman", "Arial"].sort();
   }, []);
 
   return (
@@ -105,6 +103,7 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
             }
             options={fonts}
             placeholder="Font family"
+            showWarning
             size="xs"
             value={item.fontFamily}
           />
