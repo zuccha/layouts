@@ -121,7 +121,7 @@ function AppWrapper({ children }: { children: ReactNode }) {
           <Span fontSize="lg" fontWeight={500}>
             Layouts
           </Span>
-          <Span fontSize="sm"> v0.1.0</Span>
+          <Span fontSize="sm"> v0.2.0</Span>
         </Span>
         <ThemeButton />
       </HStack>
