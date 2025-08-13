@@ -19,7 +19,11 @@ export default function FormDialogButton({
   title,
 }: FormDialogButtonProps) {
   return (
-    <Dialog.Root placement="center">
+    <Dialog.Root
+      closeOnEscape={!disabled}
+      closeOnInteractOutside={!disabled}
+      placement="center"
+    >
       <Dialog.Trigger asChild>{button}</Dialog.Trigger>
 
       <Portal>
@@ -34,7 +38,9 @@ export default function FormDialogButton({
 
             <Dialog.Footer>
               <Dialog.ActionTrigger asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button disabled={disabled} variant="outline">
+                  Cancel
+                </Button>
               </Dialog.ActionTrigger>
               <Dialog.Context>
                 {(context) => (
@@ -51,7 +57,7 @@ export default function FormDialogButton({
             </Dialog.Footer>
 
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton disabled={disabled} size="sm" />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>
