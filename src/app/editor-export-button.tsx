@@ -32,11 +32,7 @@ export default function EditorExportButton() {
 
   return (
     <FormDialogButton
-      button={
-        <Button size="xs" variant="outline">
-          Export
-        </Button>
-      }
+      button={<Button size="xs">Export</Button>}
       confirmText={percentage < 0 ? "Download" : `${percentage}%`}
       disabled={disabled}
       onConfirm={() => {
