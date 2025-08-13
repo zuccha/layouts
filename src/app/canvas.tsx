@@ -1,10 +1,12 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Group, Layer, Stage } from "react-konva";
 import {
   deselectActiveLayoutSelectedItem,
   useActiveLayoutSelectedItemId,
   useCanvasFrameRef,
+  useCanvasOffset,
+  useCanvasScale,
 } from "../app-store";
 import CanvasDataSelector from "./canvas-data-selector";
 import CanvasFrame from "./canvas-frame";
@@ -16,34 +18,37 @@ export default function Canvas() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ h: 0, w: 0 });
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useCanvasScale();
+  const [offset, setOffset] = useCanvasOffset();
 
   const selectedItemId = useActiveLayoutSelectedItemId();
 
-  const resize = () => {
+  const resize = useCallback(() => {
     if (!containerRef.current) return;
     const { offsetHeight, offsetWidth } = containerRef.current;
     setSize({ h: offsetHeight, w: offsetWidth });
-  };
+  }, []);
 
-  const wheel = (e: WheelEvent) => {
-    e.preventDefault();
-    if (e.ctrlKey) setScale((s) => Math.max(s + e.deltaY * -0.01, 0));
-    else setOffset(({ x, y }) => ({ x: x - e.deltaX, y: y - e.deltaY }));
-  };
+  const wheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.ctrlKey) setScale((s) => Math.max(s + e.deltaY * -0.01, 0));
+      else setOffset(({ x, y }) => ({ x: x - e.deltaX, y: y - e.deltaY }));
+    },
+    [setOffset, setScale],
+  );
 
   useEffect(() => {
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-  }, []);
+  }, [resize]);
 
   useEffect(() => {
     const container = containerRef.current;
     container?.addEventListener("wheel", wheel, { passive: false });
     return () => container?.removeEventListener("wheel", wheel);
-  }, []);
+  }, [wheel]);
 
   const x = size.w / 2 + offset.x;
   const y = size.h / 2 + offset.y;

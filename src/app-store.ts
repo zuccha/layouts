@@ -1333,6 +1333,22 @@ export function useFontsDirectoryHandle(): State["fontsDirectoryDirHandle"] {
 }
 
 //------------------------------------------------------------------------------
+// Use Canvas Scale
+//------------------------------------------------------------------------------
+
+const canvasScaleStore = createStore(1);
+
+export const useCanvasScale = canvasScaleStore.use;
+
+//------------------------------------------------------------------------------
+// Use Canvas Offset
+//------------------------------------------------------------------------------
+
+const canvasOffsetStore = createStore({ x: 0, y: 0 });
+
+export const useCanvasOffset = canvasOffsetStore.use;
+
+//------------------------------------------------------------------------------
 // Use Export Folder
 //------------------------------------------------------------------------------
 
@@ -1362,6 +1378,6 @@ export const useExportPpi = () => useStorePersistentNumber("export.ppi", 128);
 // Use Canvas Frame Ref
 //------------------------------------------------------------------------------
 
-const canvasRefRefStore = createStore<CanvasFrameRef>({ current: null });
+const canvasFrameRefStore = createStore<CanvasFrameRef>({ current: null });
 
-export const useCanvasFrameRef = canvasRefRefStore.useValue;
+export const useCanvasFrameRef = canvasFrameRefStore.useValue;
