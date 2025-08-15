@@ -5,10 +5,11 @@ import {
   VStack,
   parseColor,
 } from "@chakra-ui/react";
-import { type ReactNode, useCallback } from "react";
+import { type ReactNode, useCallback, useState } from "react";
 import { updateBoxItemInActiveLayout } from "../app-store";
 import SquareRoundCorner from "../assets/icons/square-round-corner";
 import ColorPicker from "../components/ui/color-picker";
+import LinkIconButton from "../components/ui/link-icon-button";
 import NumberInput from "../components/ui/number-input";
 import type { LayoutItem, LayoutItemBox } from "../models/layout";
 import Subsection from "./subsection";
@@ -22,24 +23,41 @@ export default function EditorItemTabBox({
   children,
   item,
 }: EditorItemTabBoxProps) {
+  const [positionLinked, setPositionLinked] = useState(false);
+
+  const dx = item.x1 - item.x0;
+  const dy = item.y1 - item.y0;
+
   const updateX0 = useCallback(
-    (x0: number) => updateBoxItemInActiveLayout(item.id, { x0 }, "x0-editor"),
-    [item.id],
+    (x0: number) =>
+      positionLinked ?
+        updateBoxItemInActiveLayout(item.id, { x0, x1: x0 + dx }, "x0-editor")
+      : updateBoxItemInActiveLayout(item.id, { x0 }, "x0-editor"),
+    [dx, item.id, positionLinked],
   );
 
   const updateX1 = useCallback(
-    (x1: number) => updateBoxItemInActiveLayout(item.id, { x1 }, "x1-editor"),
-    [item.id],
+    (x1: number) =>
+      positionLinked ?
+        updateBoxItemInActiveLayout(item.id, { x0: x1 - dx, x1 }, "x1-editor")
+      : updateBoxItemInActiveLayout(item.id, { x1 }, "x1-editor"),
+    [dx, item.id, positionLinked],
   );
 
   const updateY0 = useCallback(
-    (y0: number) => updateBoxItemInActiveLayout(item.id, { y0 }, "y0-editor"),
-    [item.id],
+    (y0: number) =>
+      positionLinked ?
+        updateBoxItemInActiveLayout(item.id, { y0, y1: y0 + dy }, "y0-editor")
+      : updateBoxItemInActiveLayout(item.id, { y0 }, "y0-editor"),
+    [dy, item.id, positionLinked],
   );
 
   const updateY1 = useCallback(
-    (y1: number) => updateBoxItemInActiveLayout(item.id, { y1 }, "y1-editor"),
-    [item.id],
+    (y1: number) =>
+      positionLinked ?
+        updateBoxItemInActiveLayout(item.id, { y0: y1 - dy, y1 }, "y1-editor")
+      : updateBoxItemInActiveLayout(item.id, { y1 }, "y1-editor"),
+    [dy, item.id, positionLinked],
   );
 
   const updateW = useCallback(
@@ -107,7 +125,19 @@ export default function EditorItemTabBox({
 
   return (
     <VStack align="start" gap={0} w="full">
-      <Subsection label="Position">
+      <Subsection
+        actions={
+          <LinkIconButton
+            borderWidth={0}
+            label="position"
+            linked={positionLinked}
+            mr={-2}
+            onClick={setPositionLinked}
+            size="xs"
+          />
+        }
+        label="Position"
+      >
         <HStack>
           <NumberInput
             label={<Label sub="0" text="X" />}
