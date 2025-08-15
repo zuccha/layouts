@@ -1353,14 +1353,35 @@ export const useCanvasOffset = canvasOffsetStore.use;
 //------------------------------------------------------------------------------
 
 export const useExportZipFolder = () =>
-  useStorePersistentString("export.folder", "images");
+  useStorePersistentString("export.zip.folder", "images");
 
 //------------------------------------------------------------------------------
 // Use Export Zip Image Name
 //------------------------------------------------------------------------------
 
 export const useExportZipImageName = () =>
-  useStorePersistentString("export.name", "");
+  useStorePersistentString("export.zip.name", "");
+
+//------------------------------------------------------------------------------
+// Use Export Pdf Filename
+//------------------------------------------------------------------------------
+
+export const useExportPdfFilename = () =>
+  useStorePersistentString("export.pdf.filename", "images");
+
+//------------------------------------------------------------------------------
+// Use Export Pdf Gap
+//------------------------------------------------------------------------------
+
+export const useExportPdfGap = () =>
+  useStorePersistentNumber("export.pdf.gap", 0);
+
+//------------------------------------------------------------------------------
+// Use Export Pdf Margin
+//------------------------------------------------------------------------------
+
+export const useExportPdfMargin = () =>
+  useStorePersistentNumber("export.pdf.margin", 0.5);
 
 //------------------------------------------------------------------------------
 // Use Export Dpi
