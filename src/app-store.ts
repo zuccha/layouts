@@ -1349,17 +1349,17 @@ const canvasOffsetStore = createStore({ x: 0, y: 0 });
 export const useCanvasOffset = canvasOffsetStore.use;
 
 //------------------------------------------------------------------------------
-// Use Export Folder
+// Use Export Zip Folder
 //------------------------------------------------------------------------------
 
-export const useExportFolder = () =>
+export const useExportZipFolder = () =>
   useStorePersistentString("export.folder", "images");
 
 //------------------------------------------------------------------------------
-// Use Export Image Name
+// Use Export Zip Image Name
 //------------------------------------------------------------------------------
 
-export const useExportImageName = () =>
+export const useExportZipImageName = () =>
   useStorePersistentString("export.name", "");
 
 //------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ import {
 import { wait } from "../utils/promise";
 import { interpolateText } from "./use-interpolated-text";
 
-export default function useExportDataList({
+export default function useExportDataListAsZip({
   folder,
   imageName,
   onProgress,

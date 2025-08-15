@@ -2,7 +2,7 @@ import { HStack, VStack } from "@chakra-ui/react";
 import { useActiveLayoutSelectedItemId, useCanvasScale } from "../app-store";
 import Combobox from "../components/ui/combo-box";
 import { sidebarWidth } from "../theme/theme-constants";
-import EditorExportButton from "./editor-export-button";
+import EditorExportAsZipButton from "./editor-export-as-zip-button";
 import EditorItemTab from "./editor-item-tab";
 
 export default function Editor() {
@@ -38,7 +38,7 @@ export default function Editor() {
           w="4.5em"
         />
 
-        <EditorExportButton />
+        <EditorExportAsZipButton />
       </HStack>
 
       {itemId && <EditorItemTab itemId={itemId} />}

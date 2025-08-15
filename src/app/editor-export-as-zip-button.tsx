@@ -3,25 +3,25 @@ import { type ReactNode, useState } from "react";
 import {
   useDataListSize,
   useExportDpi,
-  useExportFolder,
-  useExportImageName,
   useExportPpi,
+  useExportZipFolder,
+  useExportZipImageName,
 } from "../app-store";
 import FormDialogButton from "../components/ui/form-dialog-button";
 import Input from "../components/ui/input";
 import NumberInput from "../components/ui/number-input";
-import useExportDataList from "../hooks/use-export-data-list";
+import useExportDataListAsZip from "../hooks/use-export-data-list-as-zip";
 
-export default function EditorExportButton() {
+export default function EditorExportAsZipButton() {
   const [downloadProgress, setDownloadProgress] = useState(-1);
-  const [folder, setFolder] = useExportFolder();
-  const [imageName, setImageName] = useExportImageName();
+  const [folder, setFolder] = useExportZipFolder();
+  const [imageName, setImageName] = useExportZipImageName();
   const [dpi, setDpi] = useExportDpi();
   const [ppi, setPpi] = useExportPpi();
 
   const dataListSize = useDataListSize();
 
-  const exportDataList = useExportDataList({
+  const exportDataList = useExportDataListAsZip({
     folder,
     imageName,
     onProgress: setDownloadProgress,
@@ -32,14 +32,14 @@ export default function EditorExportButton() {
 
   return (
     <FormDialogButton
-      button={<Button size="xs">Export</Button>}
+      button={<Button size="xs">ZIP</Button>}
       confirmText={percentage < 0 ? "Download" : `${percentage}%`}
       disabled={disabled}
       onConfirm={() => {
         setDownloadProgress(0);
         exportDataList().finally(() => setDownloadProgress(-1));
       }}
-      title="Export"
+      title="Export as ZIP"
     >
       <VStack align="flex-start">
         <HStack>
