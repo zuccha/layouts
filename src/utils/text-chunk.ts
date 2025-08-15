@@ -137,8 +137,6 @@ function parseRawTextPatterns(
     (pattern) => pattern.delimiter.open && pattern.delimiter.close,
   );
 
-  console.log(patterns);
-
   while (cursor < rawParagraph.length) {
     let match:
       | { end: number; pattern: TextPattern; start: number }
