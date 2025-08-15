@@ -1381,7 +1381,7 @@ export const useExportPdfGap = () =>
 //------------------------------------------------------------------------------
 
 export const useExportPdfMargin = () =>
-  useStorePersistentNumber("export.pdf.margin", 0.5);
+  useStorePersistentNumber("export.pdf.margin", 0.25);
 
 //------------------------------------------------------------------------------
 // Use Export Dpi

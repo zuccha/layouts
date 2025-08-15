@@ -52,7 +52,7 @@ export default function EditorExportAsPdfButton() {
     >
       <VStack align="flex-start">
         <HStack>
-          <Group label="File Name">
+          <Group label="File name">
             <Input
               aria-label="File name"
               disabled={disabled}
