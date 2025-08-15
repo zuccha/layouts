@@ -203,6 +203,9 @@ function parseRawParagraph(
     if (line.w + chunk.w < maxW) {
       line.chunks.push(chunk);
       line.w += chunk.w;
+    } else if (line.w === 0 && chunk.text.length <= 1) {
+      line.chunks.push(chunk);
+      line.w += chunk.w;
     } else {
       chunksQueue.unshift(...breakTextChunk(chunk, font, maxW));
       lines.push(line);

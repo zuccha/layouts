@@ -498,6 +498,8 @@ function _updateBoxItemInActiveLayout(
   if (!state.activeLayout.items.ids.includes(id)) return undefined;
   const prevItem = state.activeLayout.items.byId[id];
   const item = { ...prevItem, ...partialItem };
+  if (item.x1 < item.x0) item.x1 = item.x0;
+  if (item.y1 < item.y0) item.y1 = item.y0;
   state.activeLayout.items.byId[id] = item;
   notifyActiveLayoutItem(id, item);
   notifyActiveLayoutUnsavedChanges(true);
