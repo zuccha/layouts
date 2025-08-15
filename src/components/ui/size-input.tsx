@@ -1,7 +1,6 @@
 import { HStack, type StackProps } from "@chakra-ui/react";
 import { useState } from "react";
-import { LuLink2, LuUnlink2 } from "react-icons/lu";
-import IconButton from "./icon-button";
+import LinkIconButton from "./link-icon-button";
 import NumberInput from "./number-input";
 
 export type SizeInputProps = StackProps & {
@@ -28,31 +27,29 @@ export default function SizeInput({
         label="W"
         min={0}
         onValueChange={(w) =>
-          linked
-            ? onChange({ h: ratio(value.h, w, value.w), w })
-            : onChange({ ...value, w })
+          linked ?
+            onChange({ h: ratio(value.h, w, value.w), w })
+          : onChange({ ...value, w })
         }
         placeholder={placeholder ? `${placeholder} width` : "Width"}
         size={size}
         value={value.w}
       />
 
-      <IconButton
-        Icon={linked ? LuLink2 : LuUnlink2}
+      <LinkIconButton
         aria-label={linked ? "Unlink" : "Link"}
-        bgColor={linked ? "bg.muted" : undefined}
-        onClick={() => setLinked((prev) => !prev)}
+        linked={linked}
+        onClick={setLinked}
         size={size ? getSmallerSize(size) : undefined}
-        variant="outline"
       />
 
       <NumberInput
         label="H"
         min={0}
         onValueChange={(h) =>
-          linked
-            ? onChange({ h, w: ratio(value.w, h, value.h) })
-            : onChange({ ...value, h })
+          linked ?
+            onChange({ h, w: ratio(value.w, h, value.h) })
+          : onChange({ ...value, h })
         }
         placeholder={placeholder ? `${placeholder} height` : "Height"}
         size={size}
