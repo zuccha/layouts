@@ -67,6 +67,7 @@ export default function EditorExportAsZipButton() {
             <NumberInput
               aria-label="DPI"
               disabled={disabled}
+              min={0}
               onValueChange={setDpi}
               value={dpi}
             />
@@ -76,6 +77,7 @@ export default function EditorExportAsZipButton() {
             <NumberInput
               aria-label="PPI"
               disabled={disabled}
+              min={0}
               onValueChange={setPpi}
               value={ppi}
             />
