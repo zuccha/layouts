@@ -24,6 +24,7 @@ export default function EditorItemTabBox({
   item,
 }: EditorItemTabBoxProps) {
   const [positionLinked, setPositionLinked] = useState(false);
+  const [borderRadiusLinked, setBorderRadiusLinked] = useState(false);
 
   const dx = item.x1 - item.x0;
   const dy = item.y1 - item.y0;
@@ -250,7 +251,19 @@ export default function EditorItemTabBox({
         </HStack>
       </Subsection>
 
-      <Subsection label="Border">
+      <Subsection
+        actions={
+          <LinkIconButton
+            borderWidth={0}
+            label="border radius"
+            linked={borderRadiusLinked}
+            mr={-2}
+            onClick={setBorderRadiusLinked}
+            size="xs"
+          />
+        }
+        label="Border"
+      >
         <HStack>
           <NumberInput
             flex={1}
@@ -280,7 +293,10 @@ export default function EditorItemTabBox({
             label={<SquareRoundCorner size="xs" transform="scaleX(-1)" />}
             min={0}
             onValueChange={(tl) =>
-              updateBorderRadius({ tl }, "border-radius-tl-editor")
+              updateBorderRadius(
+                borderRadiusLinked ? { bl: tl, br: tl, tl, tr: tl } : { tl },
+                "border-radius-tl-editor",
+              )
             }
             placeholder="Border radius top-left"
             size="xs"
@@ -291,7 +307,10 @@ export default function EditorItemTabBox({
             label={<SquareRoundCorner size="xs" />}
             min={0}
             onValueChange={(tr) =>
-              updateBorderRadius({ tr }, "border-radius-tr-editor")
+              updateBorderRadius(
+                borderRadiusLinked ? { bl: tr, br: tr, tl: tr, tr } : { tr },
+                "border-radius-tr-editor",
+              )
             }
             placeholder="Border radius top-right"
             size="xs"
@@ -304,7 +323,10 @@ export default function EditorItemTabBox({
             label={<SquareRoundCorner size="xs" transform="scale(-1, -1)" />}
             min={0}
             onValueChange={(bl) =>
-              updateBorderRadius({ bl }, "border-radius-bl-editor")
+              updateBorderRadius(
+                borderRadiusLinked ? { bl, br: bl, tl: bl, tr: bl } : { bl },
+                "border-radius-bl-editor",
+              )
             }
             placeholder="Border radius down-left"
             size="xs"
@@ -315,7 +337,10 @@ export default function EditorItemTabBox({
             label={<SquareRoundCorner size="xs" transform="scaleY(-1)" />}
             min={0}
             onValueChange={(br) =>
-              updateBorderRadius({ br }, "border-radius-br-editor")
+              updateBorderRadius(
+                borderRadiusLinked ? { bl: br, br, tl: br, tr: br } : { br },
+                "border-radius-br-editor",
+              )
             }
             placeholder="Border radius down-right"
             size="xs"
