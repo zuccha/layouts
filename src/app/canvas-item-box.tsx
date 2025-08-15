@@ -9,11 +9,11 @@ export type CanvasItemBoxProps = {
 };
 
 export default function CanvasItemBox({ children, item }: CanvasItemBoxProps) {
-  const w = item.x1 - item.x0 - item.border.width;
-  const h = item.y1 - item.y0 - item.border.width;
+  const w = Math.max(item.x1 - item.x0 - item.border.width, 0);
+  const h = Math.max(item.y1 - item.y0 - item.border.width, 0);
 
-  const contentW = w - item.pl - item.pr;
-  const contentH = h - item.pt - item.pb;
+  const contentW = Math.max(w - item.pl - item.pr);
+  const contentH = Math.max(h - item.pt - item.pb);
 
   return (
     <Group

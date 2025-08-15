@@ -498,8 +498,6 @@ function _updateBoxItemInActiveLayout(
   if (!state.activeLayout.items.ids.includes(id)) return undefined;
   const prevItem = state.activeLayout.items.byId[id];
   const item = { ...prevItem, ...partialItem };
-  if (item.x1 < item.x0) item.x1 = item.x0;
-  if (item.y1 < item.y0) item.y1 = item.y0;
   state.activeLayout.items.byId[id] = item;
   notifyActiveLayoutItem(id, item);
   notifyActiveLayoutUnsavedChanges(true);
@@ -597,7 +595,10 @@ export const updateBoxItemCoordsInActiveLayout = (
   const item = state.activeLayout.items.byId[id];
 
   const delta = { ...partialItem };
-  const size = { h: item.y1 - item.y0, w: item.x1 - item.x0 };
+  const size = {
+    h: Math.max(item.y1 - item.y0, 0),
+    w: Math.max(item.x1 - item.x0, 0),
+  };
 
   state.activeLayoutSelectedItemSnapping = {
     x0: undefined,
@@ -664,16 +665,16 @@ function snap(
 function snapH(value: number, target: Coords, range: number): number {
   if (near(value, target.x0, range)) return target.x0;
   if (near(value, target.x1, range)) return target.x1;
-  if (near(value, target.x0 + Math.abs(target.x1 - target.x0) / 2, range))
-    return target.x0 + Math.abs(target.x1 - target.x0) / 2;
+  if (near(value, target.x0 + Math.max(target.x1 - target.x0, 0) / 2, range))
+    return target.x0 + Math.max(target.x1 - target.x0, 0) / 2;
   return value;
 }
 
 function snapV(value: number, target: Coords, range: number): number {
   if (near(value, target.y0, range)) return target.y0;
   if (near(value, target.y1, range)) return target.y1;
-  if (near(value, target.y0 + Math.abs(target.y1 - target.y0) / 2, range))
-    return target.y0 + Math.abs(target.y1 - target.y0) / 2;
+  if (near(value, target.y0 + Math.max(target.y1 - target.y0, 0) / 2, range))
+    return target.y0 + Math.max(target.y1 - target.y0, 0) / 2;
   return value;
 }
 

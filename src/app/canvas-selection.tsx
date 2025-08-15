@@ -28,8 +28,8 @@ export default function CanvasSelection({
 
   const strokeWidth = 2;
 
-  const w = item.x1 - item.x0 + strokeWidth;
-  const h = item.y1 - item.y0 + strokeWidth;
+  const w = Math.max(item.x1 - item.x0, 0) + strokeWidth;
+  const h = Math.max(item.y1 - item.y0, 0) + strokeWidth;
 
   const x = item.x0 + frameX + bleedW - strokeWidth / 2;
   const y = item.y0 + frameY + bleedH - strokeWidth / 2;

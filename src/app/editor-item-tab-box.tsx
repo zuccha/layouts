@@ -186,7 +186,7 @@ export default function EditorItemTabBox({
             onValueChange={updateW}
             placeholder="Width"
             size="xs"
-            value={Math.abs(item.x1 - item.x0)}
+            value={Math.max(item.x1 - item.x0, 0)}
           />
 
           <NumberInput
@@ -195,7 +195,7 @@ export default function EditorItemTabBox({
             onValueChange={updateH}
             placeholder="Height"
             size="xs"
-            value={Math.abs(item.y1 - item.y0)}
+            value={Math.max(item.y1 - item.y0, 0)}
           />
         </HStack>
       </Subsection>
