@@ -5,13 +5,14 @@ import {
   VStack,
   parseColor,
 } from "@chakra-ui/react";
-import { type ReactNode, useCallback, useState } from "react";
+import { type ReactNode, useCallback } from "react";
 import { updateBoxItemInActiveLayout } from "../app-store";
 import SquareRoundCorner from "../assets/icons/square-round-corner";
 import ColorPicker from "../components/ui/color-picker";
 import LinkIconButton from "../components/ui/link-icon-button";
 import NumberInput from "../components/ui/number-input";
 import type { LayoutItem, LayoutItemBox } from "../models/layout";
+import { createStore } from "../utils/store";
 import Subsection from "./subsection";
 
 export type EditorItemTabBoxProps = {
@@ -23,8 +24,9 @@ export default function EditorItemTabBox({
   children,
   item,
 }: EditorItemTabBoxProps) {
-  const [positionLinked, setPositionLinked] = useState(false);
-  const [borderRadiusLinked, setBorderRadiusLinked] = useState(false);
+  const [positionLinked, setPositionLinked] = positionLinkedStore.use();
+  const [borderRadiusLinked, setBorderRadiusLinked] =
+    borderRadiusLinkedStore.use();
 
   const dx = item.x1 - item.x0;
   const dy = item.y1 - item.y0;
@@ -362,3 +364,6 @@ function Label({ sub, text }: { sub: string; text: string }) {
     </span>
   );
 }
+
+const positionLinkedStore = createStore(false);
+const borderRadiusLinkedStore = createStore(false);
