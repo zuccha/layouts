@@ -6,6 +6,7 @@ import {
   LuEye,
   LuEyeClosed,
   LuImage,
+  LuSpline,
   LuSquareDashed,
   LuType,
 } from "react-icons/lu";
@@ -13,7 +14,7 @@ import {
   appendItemToActiveLayout,
   removeItemFromActiveLayout,
   selectActiveLayoutSelectedItem,
-  updateBoxItemInActiveLayout,
+  updateBaseItemInActiveLayout,
   useActiveLayoutItem,
   useActiveLayoutSelectedItemId,
 } from "../app-store";
@@ -88,7 +89,7 @@ export default function SidebarLayoutTabItemsItem({
           fontSize="xs"
           onValueChange={(e) => {
             const name = e.value.trim();
-            if (name) updateBoxItemInActiveLayout(itemId, { name });
+            if (name) updateBaseItemInActiveLayout(itemId, { name });
           }}
           overflow="hidden"
           size="sm"
@@ -109,12 +110,14 @@ export default function SidebarLayoutTabItemsItem({
           color={item.visible ? undefined : "fg.subtle"}
           display="none"
           onClick={(e) => {
-            updateBoxItemInActiveLayout(itemId, { visible: !item.visible });
+            updateBaseItemInActiveLayout(itemId, { visible: !item.visible });
             e.stopPropagation();
           }}
           size="sm"
         >
-          {item.visible ? <LuEye /> : <LuEyeClosed />}
+          {item.visible ?
+            <LuEye />
+          : <LuEyeClosed />}
         </Icon>
       </HStack>
     </ContextMenu>
@@ -123,6 +126,7 @@ export default function SidebarLayoutTabItemsItem({
 
 const itemIcons = {
   image: LuImage,
+  line: LuSpline,
   rectangle: LuSquareDashed,
   text: LuType,
 } as const;

@@ -23,6 +23,7 @@ import {
 } from "../app-store";
 import {
   layoutItemImageSchema,
+  layoutItemLineSchema,
   layoutItemRectangleSchema,
   layoutItemTextSchema,
 } from "../models/layout";
@@ -86,6 +87,12 @@ function SidebarLayoutTabItemsActions() {
     appendItemToActiveLayout(item.id, item);
   }, [size]);
 
+  const addLine = useCallback(() => {
+    const props = { name: "New line", ...size };
+    const item = layoutItemLineSchema.parse(props);
+    appendItemToActiveLayout(item.id, item);
+  }, [size]);
+
   const addRectangle = useCallback(() => {
     const props = { name: "New rectangle", ...size };
     const item = layoutItemRectangleSchema.parse(props);
@@ -110,6 +117,9 @@ function SidebarLayoutTabItemsActions() {
           <Menu.Content>
             <Menu.Item onClick={addImage} value="add-image">
               New image
+            </Menu.Item>
+            <Menu.Item onClick={addLine} value="add-line">
+              New line
             </Menu.Item>
             <Menu.Item onClick={addRectangle} value="add-rectangle">
               New rectangle

@@ -4,10 +4,13 @@ import type { CanvasFrameRef } from "./app/canvas-frame";
 import useMountedLayoutEffect from "./hooks/use-mounted-layout-effect";
 import { type Data, type DataList, dataResponseSchema } from "./models/data";
 import {
+  type BaseLayoutItem,
+  type BaseLayoutItemBox,
   type Layout,
   type LayoutItem,
   type LayoutItemBox,
   type LayoutItemImage,
+  type LayoutItemLine,
   type LayoutItemRectangle,
   type LayoutItemText,
   layoutSchema,
@@ -488,12 +491,12 @@ export const removeItemFromActiveLayout: WithSource<
 };
 
 //------------------------------------------------------------------------------
-// Update Box Item In Active Layout
+// Update Base Item In Active Layout
 //------------------------------------------------------------------------------
 
-function _updateBoxItemInActiveLayout(
+function _updateBaseItemInActiveLayout(
   id: string,
-  partialItem: Partial<LayoutItemBox>,
+  partialItem: Partial<BaseLayoutItem>,
 ): void {
   if (!state.activeLayout.items.ids.includes(id)) return undefined;
   const prevItem = state.activeLayout.items.byId[id];
@@ -503,16 +506,16 @@ function _updateBoxItemInActiveLayout(
   notifyActiveLayoutUnsavedChanges(true);
 }
 
-export const updateBoxItemInActiveLayout: WithSource<
-  typeof _updateBoxItemInActiveLayout
+export const updateBaseItemInActiveLayout: WithSource<
+  typeof _updateBaseItemInActiveLayout
 > = (id, partialItem, source?) => {
   const prevItem = state.activeLayout.items.byId[id];
   history.add({
     id: source ? `updateItemInActiveLayout/${source}` : undefined,
-    redo: () => _updateBoxItemInActiveLayout(id, partialItem),
-    undo: () => _updateBoxItemInActiveLayout(id, prevItem),
+    redo: () => _updateBaseItemInActiveLayout(id, partialItem),
+    undo: () => _updateBaseItemInActiveLayout(id, prevItem),
   });
-  return _updateBoxItemInActiveLayout(id, partialItem);
+  return _updateBaseItemInActiveLayout(id, partialItem);
 };
 
 //------------------------------------------------------------------------------
@@ -550,6 +553,27 @@ export const updateItemInActiveLayout = <LI extends LayoutItem>(
 };
 
 //------------------------------------------------------------------------------
+// Update Line Item In Active Layout
+//------------------------------------------------------------------------------
+
+export const updateLineItemInActiveLayout = (
+  id: string,
+  partialItem: Partial<LayoutItemLine>,
+  source?: string,
+) => updateItemInActiveLayout(id, partialItem, "line", source);
+
+//------------------------------------------------------------------------------
+// Update Box Item In Active Layout
+//------------------------------------------------------------------------------
+
+export const updateBoxItemInActiveLayout = (
+  id: string,
+  partialItem: Partial<BaseLayoutItemBox>,
+  type: LayoutItemBox["_type"],
+  source?: string,
+) => updateItemInActiveLayout(id, partialItem, type, source);
+
+//------------------------------------------------------------------------------
 // Update Image Item In Active Layout
 //------------------------------------------------------------------------------
 
@@ -585,7 +609,7 @@ export const updateTextItemInActiveLayout = (
 
 type Coords = { x0: number; x1: number; y0: number; y1: number };
 
-export const updateBoxItemCoordsInActiveLayout = (
+export const updateItemCoordsInActiveLayout = (
   id: string,
   partialItem: Partial<LayoutItem>,
   fixSize: boolean,
@@ -622,7 +646,7 @@ export const updateBoxItemCoordsInActiveLayout = (
     state.activeLayoutSelectedItemSnapping,
   );
 
-  return updateBoxItemInActiveLayout(id, delta, source);
+  return updateBaseItemInActiveLayout(id, delta, source);
 };
 
 function snap(

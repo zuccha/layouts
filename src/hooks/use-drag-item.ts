@@ -1,13 +1,15 @@
 import { useCallback, useRef } from "react";
 import {
   clearActiveLayoutSelectedItemSnapping,
-  updateBoxItemCoordsInActiveLayout,
+  updateItemCoordsInActiveLayout,
 } from "../app-store";
 import type { LayoutItem } from "../models/layout";
 import useDrag from "./use-drag";
 
 export type UpdateType =
   | "move"
+  | "move-0"
+  | "move-1"
   | "resize-t"
   | "resize-b"
   | "resize-l"
@@ -33,7 +35,7 @@ export default function useDragItem(
       const coords = update[updateType](prevItem, dx / scale, dy / scale);
       const fixSize = updateType === "move";
       const source = dragIdRef.current;
-      updateBoxItemCoordsInActiveLayout(id, coords, fixSize, 5 / scale, source);
+      updateItemCoordsInActiveLayout(id, coords, fixSize, 5 / scale, source);
     },
     [id, scale, updateType],
   );
@@ -56,6 +58,20 @@ const update = {
       x0: item.x0 + dx,
       x1: item.x1 + dx,
       y0: item.y0 + dy,
+      y1: item.y1 + dy,
+    };
+  },
+
+  "move-0": (item: LayoutItem, dx: number, dy: number) => {
+    return {
+      x0: item.x0 + dx,
+      y0: item.y0 + dy,
+    };
+  },
+
+  "move-1": (item: LayoutItem, dx: number, dy: number) => {
+    return {
+      x1: item.x1 + dx,
       y1: item.y1 + dy,
     };
   },

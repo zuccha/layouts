@@ -47,36 +47,69 @@ export const patternSchema = z.object({
 export type Pattern = z.infer<typeof patternSchema>;
 
 //------------------------------------------------------------------------------
-// Layout Item Box
+// Base Layout Item
 //------------------------------------------------------------------------------
 
-export const layoutItemBoxSchema = z.object({
+export const baseLayoutItemSchema = z.object({
   id: z.uuid().default(() => crypto.randomUUID()),
   name: z.string().default(""),
   visible: z.boolean().default(true),
-
-  backgroundColor: z.string().default("rgba(255, 255, 255, 0)"),
-  border: borderSchema.default(borderSchema.parse({})),
-
-  pb: z.number().default(0),
-  pl: z.number().default(0),
-  pr: z.number().default(0),
-  pt: z.number().default(0),
-
-  x0: z.number().default(0),
-  x1: z.number().default(0),
-  y0: z.number().default(0),
-  y1: z.number().default(0),
 });
 
-export type LayoutItemBox = z.infer<typeof layoutItemBoxSchema>;
+export type BaseLayoutItem = z.infer<typeof baseLayoutItemSchema>;
+
+//------------------------------------------------------------------------------
+// Layout Item Line
+//------------------------------------------------------------------------------
+
+export const layoutItemLineSchema = z.intersection(
+  baseLayoutItemSchema,
+  z.object({
+    _type: z.literal("line").default("line"),
+
+    x0: z.number().default(0),
+    x1: z.number().default(0),
+    y0: z.number().default(0),
+    y1: z.number().default(0),
+
+    thickness: z.number().default(1),
+
+    color: z.string().default("rgba(0, 0, 0, 1)"),
+  }),
+);
+
+export type LayoutItemLine = z.infer<typeof layoutItemLineSchema>;
+
+//------------------------------------------------------------------------------
+// Layout Item Box
+//------------------------------------------------------------------------------
+
+export const baseLayoutItemBoxSchema = z.intersection(
+  baseLayoutItemSchema,
+  z.object({
+    backgroundColor: z.string().default("rgba(255, 255, 255, 0)"),
+    border: borderSchema.default(borderSchema.parse({})),
+
+    x0: z.number().default(0),
+    x1: z.number().default(0),
+    y0: z.number().default(0),
+    y1: z.number().default(0),
+
+    pb: z.number().default(0),
+    pl: z.number().default(0),
+    pr: z.number().default(0),
+    pt: z.number().default(0),
+  }),
+);
+
+export type BaseLayoutItemBox = z.infer<typeof baseLayoutItemBoxSchema>;
 
 //------------------------------------------------------------------------------
 // Layout Item Image
 //------------------------------------------------------------------------------
 
 export const layoutItemImageSchema = z.intersection(
-  layoutItemBoxSchema,
+  baseLayoutItemBoxSchema,
   z.object({
     _type: z.literal("image").default("image"),
     source: z.string().default(""),
@@ -90,7 +123,7 @@ export type LayoutItemImage = z.infer<typeof layoutItemImageSchema>;
 //------------------------------------------------------------------------------
 
 export const layoutItemRectangleSchema = z.intersection(
-  layoutItemBoxSchema,
+  baseLayoutItemBoxSchema,
   z.object({
     _type: z.literal("rectangle").default("rectangle"),
     source: z.string().default(""),
@@ -104,7 +137,7 @@ export type LayoutItemRectangle = z.infer<typeof layoutItemRectangleSchema>;
 //------------------------------------------------------------------------------
 
 export const layoutItemTextSchema = z.intersection(
-  layoutItemBoxSchema,
+  baseLayoutItemBoxSchema,
   z.object({
     _type: z.literal("text").default("text"),
     alignH: z.enum(["left", "center", "right"]).default("left"),
@@ -127,13 +160,24 @@ export const layoutItemTextSchema = z.intersection(
 export type LayoutItemText = z.infer<typeof layoutItemTextSchema>;
 
 //------------------------------------------------------------------------------
+// Layout Item Box
+//------------------------------------------------------------------------------
+
+export const layoutItemBoxSchema = z.union([
+  layoutItemImageSchema,
+  layoutItemRectangleSchema,
+  layoutItemTextSchema,
+]);
+
+export type LayoutItemBox = z.infer<typeof layoutItemBoxSchema>;
+
+//------------------------------------------------------------------------------
 // Layout Item
 //------------------------------------------------------------------------------
 
 export const layoutItemSchema = z.union([
-  layoutItemImageSchema,
-  layoutItemRectangleSchema,
-  layoutItemTextSchema,
+  layoutItemLineSchema,
+  layoutItemBoxSchema,
 ]);
 
 export type LayoutItem = z.infer<typeof layoutItemSchema>;

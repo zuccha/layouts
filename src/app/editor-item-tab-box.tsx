@@ -2,7 +2,6 @@ import {
   Box,
   type ColorPickerValueChangeDetails,
   HStack,
-  VStack,
   parseColor,
 } from "@chakra-ui/react";
 import { type ReactNode, useCallback } from "react";
@@ -11,8 +10,9 @@ import SquareRoundCorner from "../assets/icons/square-round-corner";
 import ColorPicker from "../components/ui/color-picker";
 import LinkIconButton from "../components/ui/link-icon-button";
 import NumberInput from "../components/ui/number-input";
-import type { LayoutItem, LayoutItemBox } from "../models/layout";
+import type { LayoutItemBox } from "../models/layout";
 import { createStore } from "../utils/store";
+import EditorItemTabBase from "./editor-item-tab-base";
 import Subsection from "./subsection";
 
 export type EditorItemTabBoxProps = {
@@ -31,88 +31,90 @@ export default function EditorItemTabBox({
   const dx = item.x1 - item.x0;
   const dy = item.y1 - item.y0;
 
+  const updateItem = useCallback(
+    (partialItem: Partial<LayoutItemBox>, source: string) =>
+      updateBoxItemInActiveLayout(item.id, partialItem, item._type, source),
+    [item._type, item.id],
+  );
+
   const updateX0 = useCallback(
     (x0: number) =>
-      positionLinked ?
-        updateBoxItemInActiveLayout(item.id, { x0, x1: x0 + dx }, "x0-editor")
-      : updateBoxItemInActiveLayout(item.id, { x0 }, "x0-editor"),
-    [dx, item.id, positionLinked],
+      updateItem(positionLinked ? { x0, x1: x0 + dx } : { x0 }, "x0-editor"),
+    [dx, positionLinked, updateItem],
   );
 
   const updateX1 = useCallback(
     (x1: number) =>
-      positionLinked ?
-        updateBoxItemInActiveLayout(item.id, { x0: x1 - dx, x1 }, "x1-editor")
-      : updateBoxItemInActiveLayout(item.id, { x1 }, "x1-editor"),
-    [dx, item.id, positionLinked],
+      updateItem(positionLinked ? { x0: x1 - dx, x1 } : { x1 }, "x1-editor"),
+    [dx, positionLinked, updateItem],
   );
 
   const updateY0 = useCallback(
     (y0: number) =>
-      positionLinked ?
-        updateBoxItemInActiveLayout(item.id, { y0, y1: y0 + dy }, "y0-editor")
-      : updateBoxItemInActiveLayout(item.id, { y0 }, "y0-editor"),
-    [dy, item.id, positionLinked],
+      updateItem(positionLinked ? { y0, y1: y0 + dy } : { y0 }, "y0-editor"),
+    [dy, positionLinked, updateItem],
   );
 
   const updateY1 = useCallback(
     (y1: number) =>
-      positionLinked ?
-        updateBoxItemInActiveLayout(item.id, { y0: y1 - dy, y1 }, "y1-editor")
-      : updateBoxItemInActiveLayout(item.id, { y1 }, "y1-editor"),
-    [dy, item.id, positionLinked],
+      updateItem(positionLinked ? { y0: y1 - dy, y1 } : { y1 }, "y1-editor"),
+    [dy, positionLinked, updateItem],
   );
 
   const updateW = useCallback(
-    (w: number) =>
-      updateBoxItemInActiveLayout(item.id, { x1: item.x0 + w }, "w-editor"),
-    [item.id, item.x0],
+    (w: number) => updateItem({ x1: item.x0 + w }, "w-editor"),
+    [item.x0, updateItem],
   );
 
   const updateH = useCallback(
-    (h: number) =>
-      updateBoxItemInActiveLayout(item.id, { y1: item.y0 + h }, "h-editor"),
-    [item.id, item.y0],
+    (h: number) => updateItem({ y1: item.y0 + h }, "h-editor"),
+    [item.y0, updateItem],
   );
 
   const updatePt = useCallback(
-    (pt: number) => updateBoxItemInActiveLayout(item.id, { pt }, "pt-editor"),
-    [item.id],
+    (pt: number) => updateItem({ pt }, "pt-editor"),
+    [updateItem],
   );
 
   const updatePb = useCallback(
-    (pb: number) => updateBoxItemInActiveLayout(item.id, { pb }, "pb-editor"),
-    [item.id],
+    (pb: number) => updateItem({ pb }, "pb-editor"),
+    [updateItem],
   );
   const updatePl = useCallback(
-    (pl: number) => updateBoxItemInActiveLayout(item.id, { pl }, "pl-editor"),
-    [item.id],
+    (pl: number) => updateItem({ pl }, "pl-editor"),
+    [updateItem],
   );
   const updatePr = useCallback(
-    (pr: number) => updateBoxItemInActiveLayout(item.id, { pr }, "pr-editor"),
-    [item.id],
+    (pr: number) => updateItem({ pr }, "pr-editor"),
+    [updateItem],
   );
 
   const updateBackgroundColor = useCallback(
     (c: ColorPickerValueChangeDetails) =>
-      updateBoxItemInActiveLayout(item.id, {
-        backgroundColor: c.valueAsString,
-      }),
-    [item.id],
+      updateBoxItemInActiveLayout(
+        item.id,
+        { backgroundColor: c.valueAsString },
+        item._type,
+      ),
+    [item._type, item.id],
   );
 
   const updateBorder = useCallback(
-    (partialBorder: Partial<LayoutItem["border"]>, source: string) =>
+    (partialBorder: Partial<LayoutItemBox["border"]>, source: string) =>
       updateBoxItemInActiveLayout(
         item.id,
         { border: { ...item.border, ...partialBorder } },
+        item._type,
         source,
       ),
-    [item.border, item.id],
+    [item.border, item._type, item.id],
   );
 
   const updateBorderRadius = useCallback(
-    (partialRadius: Partial<LayoutItem["border"]["radius"]>, source: string) =>
+    (
+      partialRadius: Partial<LayoutItemBox["border"]["radius"]>,
+      source: string,
+    ) =>
       updateBoxItemInActiveLayout(
         item.id,
         {
@@ -121,13 +123,14 @@ export default function EditorItemTabBox({
             radius: { ...item.border.radius, ...partialRadius },
           },
         },
+        item._type,
         source,
       ),
-    [item.border, item.id],
+    [item.border, item._type, item.id],
   );
 
   return (
-    <VStack align="start" gap={0} w="full">
+    <EditorItemTabBase item={item}>
       <Subsection
         actions={
           <LinkIconButton
@@ -352,7 +355,7 @@ export default function EditorItemTabBox({
       </Subsection>
 
       {children}
-    </VStack>
+    </EditorItemTabBase>
   );
 }
 
