@@ -30,8 +30,8 @@ export default function CanvasItemBox({ children, item }: CanvasItemBoxProps) {
         cornerRadius={[
           item.border.radius.tl,
           item.border.radius.tr,
-          item.border.radius.bl,
           item.border.radius.br,
+          item.border.radius.bl,
         ]}
         fill={item.backgroundColor}
         height={h}
