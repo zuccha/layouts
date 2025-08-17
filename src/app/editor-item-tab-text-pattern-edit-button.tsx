@@ -172,6 +172,7 @@ export default function EditorItemTabTextPatternEditButton({
                     }
                   />
                   <ColorPicker
+                    aria-label="Text color"
                     container={containerRef}
                     disabled={!pattern.styles.textColorCustom}
                     onValueChange={(e) =>
