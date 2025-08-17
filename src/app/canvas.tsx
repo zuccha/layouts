@@ -70,7 +70,7 @@ export default function Canvas() {
           >
             <Layer>
               <Group scale={{ x: scale, y: scale }} x={x} y={y}>
-                <CanvasFrame ref={canvasFrameRef} />
+                <CanvasFrame ref={canvasFrameRef} scale={scale} x={x} y={y} />
 
                 {selectedItemId && (
                   <CanvasSelection itemId={selectedItemId} scale={scale} />

@@ -18,8 +18,14 @@ export type CanvasFrameRef = {
   current: CanvasFrameRefObject | null;
 };
 
-export default forwardRef<CanvasFrameRefObject>(
-  function CanvasFrame(_props, ref) {
+export type CanvasFrameProps = {
+  scale: number;
+  x: number;
+  y: number;
+};
+
+export default forwardRef<CanvasFrameRefObject, CanvasFrameProps>(
+  function CanvasFrame({ scale, x, y }, ref) {
     const groupRef = useRef<Konva.Group>(null);
 
     const data = useActiveData();
@@ -42,14 +48,21 @@ export default forwardRef<CanvasFrameRefObject>(
     } = useActiveLayoutFrame();
 
     useImperativeHandle(ref, () => ({
-      toPng: () => groupRef.current?.toDataURL({ pixelRatio: dpi / ppi }),
+      toPng: () =>
+        groupRef.current?.toDataURL({
+          height: frameH * scale,
+          pixelRatio: dpi / ppi,
+          width: frameW * scale,
+          x: x + frameX * scale,
+          y: y + frameY * scale,
+        }),
     }));
 
     return (
       <Group
-        height={layoutH}
+        height={frameH}
         ref={groupRef}
-        width={layoutW}
+        width={frameW}
         x={frameX}
         y={frameY}
       >
