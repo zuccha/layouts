@@ -188,6 +188,37 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
         <HStack w="full">
           <NumberInput
             min={0}
+            onValueChange={(paragraphGap) =>
+              updateTextItemInActiveLayout(
+                item.id,
+                { paragraphGap },
+                "paragraph-gap-editor",
+              )
+            }
+            placeholder="Paragraph gap (\n)"
+            size="xs"
+            value={item.paragraphGap}
+          />
+
+          <NumberInput
+            min={0}
+            onValueChange={(sectionGap) =>
+              updateTextItemInActiveLayout(
+                item.id,
+                { sectionGap },
+                "section-gap-editor",
+              )
+            }
+            placeholder="Section gap (\r)"
+            size="xs"
+            value={item.sectionGap}
+          />
+        </HStack>
+
+        <HStack w="full">
+          <NumberInput
+            flex={1}
+            min={0}
             onValueChange={(lineHeight) =>
               updateTextItemInActiveLayout(
                 item.id,
@@ -201,19 +232,7 @@ export default function EditorItemTabText({ item }: EditorItemTabTextProps) {
             value={item.lineHeight}
           />
 
-          <NumberInput
-            min={0}
-            onValueChange={(paragraphGap) =>
-              updateTextItemInActiveLayout(
-                item.id,
-                { paragraphGap },
-                "paragraph-gap-editor",
-              )
-            }
-            placeholder="Paragraph gap"
-            size="xs"
-            value={item.paragraphGap}
-          />
+          <Flex flex={1} />
         </HStack>
       </Subsection>
 

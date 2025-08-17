@@ -76,7 +76,7 @@ function formatRawText(
     : transform === "uppercase" ? text.toUpperCase()
     : text;
 
-  const parts = formattedText.match(/(\n|\v| +|[^ \v\n]+)/g) || [];
+  const parts = formattedText.match(/(\n|\r| +|[^ \r\n]+)/g) || [];
   for (const part of parts) {
     const w = measureRawText(part, font, formatting.style, symbol);
     chunks.push({
@@ -197,6 +197,7 @@ function parseRawText(
   maxH: number,
   lineHeight: number,
   paragraphGap: number,
+  sectionGap: number,
   alignH: LayoutItemText["alignH"],
   alignV: LayoutItemText["alignV"],
 ): [TextChunk[], number] {
@@ -225,10 +226,10 @@ function parseRawText(
       addLine();
       x = 0;
       y += font.size + paragraphGap;
-    } else if (chunk.text === "\v") {
+    } else if (chunk.text === "\r") {
       addLine();
       x = 0;
-      y += font.size + 2 * paragraphGap;
+      y += font.size + sectionGap;
     } else if (x + chunk.w < maxW || (x === 0 && chunk.text.length <= 1)) {
       lineChunks.push({ ...chunk, x, y });
       x += chunk.w;
@@ -262,6 +263,7 @@ export function parseRawTextAndAdjustHeight(
   maxH: number,
   lineHeight: number,
   paragraphGap: number,
+  sectionGap: number,
   alignH: LayoutItemText["alignH"],
   alignV: LayoutItemText["alignV"],
 ): [TextChunk[], number, number] {
@@ -274,6 +276,7 @@ export function parseRawTextAndAdjustHeight(
       maxH,
       lineHeight,
       paragraphGap,
+      sectionGap,
       alignH,
       alignV,
     );

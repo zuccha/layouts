@@ -81,6 +81,7 @@ function CanvasItemTextAux({
       h,
       item.lineHeight,
       item.paragraphGap,
+      item.sectionGap,
       item.alignH,
       item.alignV,
     );
@@ -91,6 +92,7 @@ function CanvasItemTextAux({
     item.alignV,
     item.lineHeight,
     item.paragraphGap,
+    item.sectionGap,
     patterns,
     text,
     w,
