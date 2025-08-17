@@ -76,7 +76,7 @@ function formatRawText(
     : transform === "uppercase" ? text.toUpperCase()
     : text;
 
-  const parts = formattedText.match(/(\n|\v|\s+|[^\s\v\n]+)/g) || [];
+  const parts = formattedText.match(/(\n|\v| +|[^ \v\n]+)/g) || [];
   for (const part of parts) {
     const w = measureRawText(part, font, formatting.style, symbol);
     chunks.push({
@@ -205,7 +205,6 @@ function parseRawText(
 
   let x = 0;
   let y = 0;
-  let lineH = 0;
 
   let lineChunks: TextChunk[] = [];
 
@@ -220,20 +219,19 @@ function parseRawText(
     const chunk = chunksQueue.shift()!;
 
     if (!chunk.text.length) continue;
-    if (x === 0 && /^\s+$/.test(chunk.text)) continue;
+    if (x === 0 && /^ +$/.test(chunk.text)) continue;
 
     if (chunk.text === "\n") {
       addLine();
       x = 0;
-      y += lineH + paragraphGap;
-      lineH = 0;
+      y += font.size + paragraphGap;
     } else if (chunk.text === "\v") {
       addLine();
-      y += chunk.h * lineHeight;
+      x = 0;
+      y += font.size + 2 * paragraphGap;
     } else if (x + chunk.w < maxW || (x === 0 && chunk.text.length <= 1)) {
       lineChunks.push({ ...chunk, x, y });
       x += chunk.w;
-      lineH = Math.max(lineH, chunk.h);
     } else {
       addLine();
       chunksQueue.unshift(...breakTextChunk(chunk, font, maxW));
@@ -244,7 +242,7 @@ function parseRawText(
 
   addLine();
 
-  const h = y + lineH;
+  const h = y + font.size;
 
   const dh = maxH - h;
   const dy = { bottom: dh, middle: dh / 2, top: 0 }[alignV];
