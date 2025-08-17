@@ -1,4 +1,5 @@
 import Konva from "konva";
+import type { LayoutItemText } from "../models/layout";
 
 //------------------------------------------------------------------------------
 // Types
@@ -28,23 +29,13 @@ export type TextPattern = {
 
 export type TextChunk = {
   color?: PatternFormatting["color"];
+  h: number;
   style: PatternFormatting["style"];
   symbol?: TextSymbol;
   text: string;
   w: number;
-};
-
-export type TextLine = {
-  chunks: TextChunk[];
-  w: number;
-};
-
-export type TextParagraph = {
-  lines: TextLine[];
-};
-
-export type Text = {
-  paragraphs: TextParagraph[];
+  x: number;
+  y: number;
 };
 
 //------------------------------------------------------------------------------
@@ -85,15 +76,18 @@ function formatRawText(
     : transform === "uppercase" ? text.toUpperCase()
     : text;
 
-  const parts = formattedText.match(/(\s+|[^\s]+)/g) || [];
+  const parts = formattedText.match(/(\n|\v|\s+|[^\s\v\n]+)/g) || [];
   for (const part of parts) {
     const w = measureRawText(part, font, formatting.style, symbol);
     chunks.push({
       color: formatting.color,
+      h: font.size,
       style: formatting.style,
       symbol,
       text: part,
       w,
+      x: 0,
+      y: 0,
     });
   }
 
@@ -192,56 +186,100 @@ function parseRawTextPatterns(
 }
 
 //------------------------------------------------------------------------------
-// Parse Raw Paragraph
+// Parse Raw Text
 //------------------------------------------------------------------------------
 
-function parseRawParagraph(
+function parseRawText(
   rawParagraph: string,
   font: TextFont,
   patterns: TextPattern[],
   maxW: number,
-): TextParagraph {
+  maxH: number,
+  lineHeight: number,
+  paragraphGap: number,
+  alignH: LayoutItemText["alignH"],
+  alignV: LayoutItemText["alignV"],
+): [TextChunk[], number] {
   const chunksQueue = parseRawTextPatterns(rawParagraph, font, patterns);
+  const chunks: TextChunk[] = [];
 
-  const lines: TextLine[] = [];
-  let line: TextLine = { chunks: [], w: 0 };
+  let x = 0;
+  let y = 0;
+  let lineH = 0;
+
+  let lineChunks: TextChunk[] = [];
+
+  const addLine = () => {
+    const dw = maxW - x;
+    const dx = { center: dw / 2, left: 0, right: dw }[alignH];
+    chunks.push(...lineChunks.map((chunk) => ({ ...chunk, x: chunk.x + dx })));
+    lineChunks = [];
+  };
 
   while (chunksQueue.length) {
     const chunk = chunksQueue.shift()!;
 
     if (!chunk.text.length) continue;
-    if (!line.chunks.length && /^\s+$/.test(chunk.text)) continue;
+    if (x === 0 && /^\s+$/.test(chunk.text)) continue;
 
-    if (line.w + chunk.w < maxW) {
-      line.chunks.push(chunk);
-      line.w += chunk.w;
-    } else if (line.w === 0 && chunk.text.length <= 1) {
-      line.chunks.push(chunk);
-      line.w += chunk.w;
+    if (chunk.text === "\n") {
+      addLine();
+      x = 0;
+      y += lineH + paragraphGap;
+      lineH = 0;
+    } else if (chunk.text === "\v") {
+      addLine();
+      y += chunk.h * lineHeight;
+    } else if (x + chunk.w < maxW || (x === 0 && chunk.text.length <= 1)) {
+      lineChunks.push({ ...chunk, x, y });
+      x += chunk.w;
+      lineH = Math.max(lineH, chunk.h);
     } else {
+      addLine();
       chunksQueue.unshift(...breakTextChunk(chunk, font, maxW));
-      lines.push(line);
-      line = { chunks: [], w: 0 };
+      x = 0;
+      y += chunk.h * lineHeight;
     }
   }
 
-  lines.push(line);
+  addLine();
 
-  return { lines };
+  const h = y + lineH;
+
+  const dh = maxH - h;
+  const dy = { bottom: dh, middle: dh / 2, top: 0 }[alignV];
+
+  return [chunks.map((chunk) => ({ ...chunk, y: chunk.y + dy })), h];
 }
 
 //------------------------------------------------------------------------------
-// Parse Raw Text
+// Parse Raw Text And Adjust Height
 //------------------------------------------------------------------------------
 
-export function parseRawText(
+export function parseRawTextAndAdjustHeight(
   rawText: string,
-  font: TextFont,
+  formatting: TextFont,
   patterns: TextPattern[],
   maxW: number,
-): Text {
-  const paragraphs = rawText
-    .split("\n")
-    .map((paragraph) => parseRawParagraph(paragraph, font, patterns, maxW));
-  return { paragraphs };
+  maxH: number,
+  lineHeight: number,
+  paragraphGap: number,
+  alignH: LayoutItemText["alignH"],
+  alignV: LayoutItemText["alignV"],
+): [TextChunk[], number, number] {
+  while (true) {
+    const [chunks, h] = parseRawText(
+      rawText,
+      formatting,
+      patterns,
+      maxW,
+      maxH,
+      lineHeight,
+      paragraphGap,
+      alignH,
+      alignV,
+    );
+    if (h <= maxH || formatting.size <= 1) return [chunks, formatting.size, h];
+    formatting = { ...formatting, size: formatting.size - 0.1 };
+  }
 }

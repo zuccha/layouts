@@ -5,8 +5,10 @@ import useImage from "use-image";
 import useImageUrl from "../hooks/use-image-url";
 import useInterpolatedText from "../hooks/use-interpolated-text";
 import type { LayoutItemText } from "../models/layout";
-import type { TextFont } from "../utils/text-chunk";
-import { computeTextChunkRects } from "../utils/text-chunk-rect";
+import {
+  type TextFont,
+  parseRawTextAndAdjustHeight,
+} from "../utils/text-chunk";
 import CanvasItemBox from "./canvas-item-box";
 
 export type CanvasItemTextProps = {
@@ -71,7 +73,7 @@ function CanvasItemTextAux({
   );
 
   const [textChunkRects, fontSize] = useMemo(() => {
-    return computeTextChunkRects(
+    return parseRawTextAndAdjustHeight(
       text,
       font,
       patterns,

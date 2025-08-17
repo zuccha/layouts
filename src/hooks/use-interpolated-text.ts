@@ -28,6 +28,7 @@ function getJsonValue(json: Json, path: string): string {
 export function interpolateText(text: string, json: Json): string {
   return text
     .replace(/\\n/g, "\n")
+    .replace(/\\v/g, "\v")
     .replace(/<([^<>]+)>/g, (_, path) => getJsonValue(json, path));
 }
 
