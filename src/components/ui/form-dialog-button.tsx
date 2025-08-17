@@ -5,6 +5,7 @@ export type FormDialogButtonProps = {
   button: ReactNode;
   children: ReactNode;
   confirmText: string;
+  contentRef?: React.Ref<HTMLDivElement>;
   disabled?: boolean;
   onConfirm: () => boolean | void;
   title: string;
@@ -14,6 +15,7 @@ export default function FormDialogButton({
   button,
   children,
   confirmText,
+  contentRef,
   disabled,
   onConfirm,
   title,
@@ -29,7 +31,7 @@ export default function FormDialogButton({
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
-          <Dialog.Content>
+          <Dialog.Content ref={contentRef}>
             <Dialog.Header>
               <Dialog.Title>{title}</Dialog.Title>
             </Dialog.Header>

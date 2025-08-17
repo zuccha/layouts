@@ -3,6 +3,7 @@ import {
   type ColorPickerRootProps as ChakraColorPickerRootProps,
   HStack,
   Portal,
+  type PortalProps,
   Text,
   VStack,
   getColorChannels,
@@ -15,10 +16,12 @@ import { Tooltip } from "./tooltip";
 export type ColorPicker_Props = Omit<
   ChakraColorPickerRootProps,
   "onValueChangeEnd"
->;
+> & {
+  container?: PortalProps["container"];
+};
 
 export default function ColorPicker(props: ColorPicker_Props) {
-  const { onValueChange, value, ...rest } = props;
+  const { container, onValueChange, value, ...rest } = props;
   const [tempValue, setTempValue] = useState(value);
 
   useMountedLayoutEffect(() => setTempValue(value), [value]);
@@ -39,7 +42,7 @@ export default function ColorPicker(props: ColorPicker_Props) {
           </ChakraColorPicker.Trigger>
         </ChakraColorPicker.Control>
       </Tooltip>
-      <Portal>
+      <Portal container={container}>
         <ChakraColorPicker.Positioner>
           <ChakraColorPicker.Content>
             <ChakraColorPicker.Area />

@@ -51,6 +51,10 @@ function CanvasItemTextAux({
       item.patterns.map((pattern) => ({
         delimiter: pattern.delimiter,
         formatting: {
+          color:
+            pattern.styles.textColorCustom ?
+              pattern.styles.textColor
+            : undefined,
           style: computeFontStyle(
             pattern.styles.fontWeight,
             pattern.styles.fontStyle,
@@ -101,7 +105,7 @@ function CanvasItemTextAux({
         y={rect.y}
       />
     : <Text
-        fill={item.textColor}
+        fill={rect.color ?? item.textColor}
         fontFamily={item.fontFamily}
         fontSize={fontSize}
         fontStyle={rect.style ?? font.style}

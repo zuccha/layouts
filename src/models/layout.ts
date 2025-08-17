@@ -23,13 +23,15 @@ const borderSchema = z.object({
 //------------------------------------------------------------------------------
 
 const patternDelimiterSchema = z.object({
-  close: z.string().default(""),
-  open: z.string().default(""),
+  close: z.string().default("}"),
+  open: z.string().default("{"),
 });
 
 const patternStylesSchema = z.object({
   fontStyle: z.enum(["normal", "italic"]).default("normal"),
   fontWeight: z.enum(["normal", "bold"]).default("normal"),
+  textColor: z.string().default("#000000"),
+  textColorCustom: z.boolean().default(false),
   textTransform: z
     .enum(["none", "capitalize", "lowercase", "uppercase"])
     .default("none"),

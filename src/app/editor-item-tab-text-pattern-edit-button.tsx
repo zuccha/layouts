@@ -7,8 +7,9 @@ import {
   Switch,
   VStack,
   createListCollection,
+  parseColor,
 } from "@chakra-ui/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import {
   LuBold,
   LuCaseLower,
@@ -18,6 +19,8 @@ import {
   LuPencil,
 } from "react-icons/lu";
 import ButtonRadio from "../components/ui/button-radio";
+import Checkbox from "../components/ui/checkbox";
+import ColorPicker from "../components/ui/color-picker";
 import FormDialogButton from "../components/ui/form-dialog-button";
 import IconButton from "../components/ui/icon-button";
 import Input from "../components/ui/input";
@@ -34,6 +37,7 @@ export default function EditorItemTabTextPatternEditButton({
   initialPattern,
   onSave,
 }: EditorItemTabTextPatternEditButtonProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [pattern, setPattern] = useState(initialPattern);
 
   const update = (partial: Partial<Pattern>) =>
@@ -67,6 +71,7 @@ export default function EditorItemTabTextPatternEditButton({
         />
       }
       confirmText="Save"
+      contentRef={containerRef}
       disabled={disabled}
       onConfirm={() => {
         onSave(pattern);
@@ -117,42 +122,69 @@ export default function EditorItemTabTextPatternEditButton({
           />
         </Group>
 
-        <GridItem colSpan={2}>
-          {pattern.type === "text" ?
-            <Group label="Style">
-              <HStack w="full">
-                <ButtonRadio
-                  onChangeValue={(textTransform) =>
-                    updateStyles({ textTransform })
-                  }
-                  options={textTransformOptions}
-                  value={pattern.styles.textTransform}
-                />
+        {pattern.type === "text" ?
+          <>
+            <GridItem colSpan={2}>
+              <Group label="Style">
+                <HStack w="full">
+                  <ButtonRadio
+                    onChangeValue={(textTransform) =>
+                      updateStyles({ textTransform })
+                    }
+                    options={textTransformOptions}
+                    value={pattern.styles.textTransform}
+                  />
 
-                <ToggleIconButton
-                  Icon={LuBold}
-                  active={isBold}
-                  aria-label="Bold"
-                  onClick={() =>
-                    updateStyles({
-                      fontWeight: isBold ? "normal" : "bold",
-                    })
-                  }
-                />
+                  <ToggleIconButton
+                    Icon={LuBold}
+                    active={isBold}
+                    aria-label="Bold"
+                    onClick={() =>
+                      updateStyles({
+                        fontWeight: isBold ? "normal" : "bold",
+                      })
+                    }
+                  />
 
-                <ToggleIconButton
-                  Icon={LuItalic}
-                  active={isItalic}
-                  aria-label="Italic"
-                  onClick={() =>
-                    updateStyles({
-                      fontStyle: isItalic ? "normal" : "italic",
-                    })
-                  }
-                />
-              </HStack>
-            </Group>
-          : <HStack>
+                  <ToggleIconButton
+                    Icon={LuItalic}
+                    active={isItalic}
+                    aria-label="Italic"
+                    onClick={() =>
+                      updateStyles({
+                        fontStyle: isItalic ? "normal" : "italic",
+                      })
+                    }
+                  />
+                </HStack>
+              </Group>
+            </GridItem>
+
+            <GridItem />
+
+            <GridItem colSpan={2}>
+              <Group label="Color">
+                <HStack>
+                  <Checkbox
+                    checked={pattern.styles.textColorCustom}
+                    onToggle={(textColorCustom) =>
+                      updateStyles({ textColorCustom })
+                    }
+                  />
+                  <ColorPicker
+                    container={containerRef}
+                    disabled={!pattern.styles.textColorCustom}
+                    onValueChange={(e) =>
+                      updateStyles({ textColor: e.valueAsString })
+                    }
+                    value={parseColor(pattern.styles.textColor)}
+                  />
+                </HStack>
+              </Group>
+            </GridItem>
+          </>
+        : <GridItem colSpan={2}>
+            <HStack>
               <Group label="Symbol path">
                 <Input
                   aria-label="Symbol path"
@@ -175,8 +207,8 @@ export default function EditorItemTabTextPatternEditButton({
                 </Flex>
               </Group>
             </HStack>
-          }
-        </GridItem>
+          </GridItem>
+        }
       </SimpleGrid>
     </FormDialogButton>
   );

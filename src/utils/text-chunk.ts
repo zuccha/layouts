@@ -14,6 +14,7 @@ export type TextFont = {
 export type TextSymbol = { path: string; shadow: boolean };
 
 export type PatternFormatting = {
+  color?: string;
   style?: "normal" | "bold" | "italic" | "bold italic";
   transform?: "none" | "capitalize" | "lowercase" | "uppercase";
 };
@@ -26,6 +27,7 @@ export type TextPattern = {
 };
 
 export type TextChunk = {
+  color?: PatternFormatting["color"];
   style: PatternFormatting["style"];
   symbol?: TextSymbol;
   text: string;
@@ -86,7 +88,13 @@ function formatRawText(
   const parts = formattedText.match(/(\s+|[^\s]+)/g) || [];
   for (const part of parts) {
     const w = measureRawText(part, font, formatting.style, symbol);
-    chunks.push({ style: formatting.style, symbol, text: part, w });
+    chunks.push({
+      color: formatting.color,
+      style: formatting.style,
+      symbol,
+      text: part,
+      w,
+    });
   }
 
   return chunks;
