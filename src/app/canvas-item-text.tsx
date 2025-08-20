@@ -140,7 +140,6 @@ function Symbol({
   const [image] = useImage(url ?? "");
   return (
     <Image
-      cornerRadius={100}
       height={size}
       image={image}
       shadowColor={shadow ? "black" : undefined}
