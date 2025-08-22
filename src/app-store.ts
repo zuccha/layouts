@@ -205,6 +205,9 @@ function _setActiveLayout(layout: Layout, unsavedChanges: boolean) {
   notifyActiveLayoutItemIds(layout.items.ids);
   notifyActiveLayoutSelectedItemId(undefined);
   notifyActiveLayoutUnsavedChanges(unsavedChanges);
+  layout.items.ids.forEach((id) =>
+    notifyActiveLayoutItem(id, layout.items.byId[id]),
+  );
 }
 
 export const setActiveLayout: WithSource<typeof _setActiveLayout> = (
